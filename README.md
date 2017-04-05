@@ -1,8 +1,6 @@
-## Welcome to GitHub Pages
+### Summary
 
-You can use the [editor on GitHub](https://github.com/eourcs/LockFreeCuckooHash/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+We are going to implement a fully concurrent lock-free hash table implementation based on Nguyen and Tsigas. We hope to improve upon their design with various optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
 
 ### Markdown
 
