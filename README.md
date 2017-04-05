@@ -10,6 +10,8 @@ The search for a highly-performant general purpose hash table is a very active a
 
 We wish to improve upon their implementation by combining various optimizations suggested in the literature.
 
+### Challenges
+
 ### Resources
 We will be writing our implementation from scratch in C++ based on a paper entitled 
 [Lock-free Cuckoo Hashing](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf) (Nguyen, Tsigas) and will be extending this implementation
@@ -41,6 +43,8 @@ Date | Plan | Status
 04/25-05/01 | One week reserved for debugging, testing, etc. |
 05/02-05/09 | Implement and test optimizations. |
 05/11       | Finalize project report, prepare presentation. |
+
+### References
 
 ```markdown
 Syntax highlighted code block
