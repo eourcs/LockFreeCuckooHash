@@ -37,7 +37,7 @@ it after using it for previous assignments in 15418.
 
 ### Schedule
 Date | Plan | Status
------| ---- | ------
+---- | ---- | ------
 04/10-04/17 | Implement benchmarking/testing suite. Find interesting potential optimizations. Revise proposal as needed.  | 
 04/18-04/24 | Implement lock-free hash table. | 
 04/25-05/01 | One week reserved for debugging, testing, etc. |
