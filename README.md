@@ -1,10 +1,10 @@
 ### Summary
 
-We are going to implement a fully concurrent lock-free hash table implementation based on _Nguyen and Tsigas_. We hope to improve upon their design with various optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
+We are going to implement a fully concurrent lock-free hash table implementation based on _Nguyen and Tsigas_. We hope to improve upon their design with optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
 
 ### Background
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Hash tables are an incredibly common data structure with a wide variety of use cases, including removing duplicates, computing edge contraction, and generating binary decision diagrams. A common variant of the hash table uses "cuckoo hashing," which employs two distinct hash functions and guarantees worst case _O(1)_ lookup. 
 
 ```markdown
 Syntax highlighted code block
