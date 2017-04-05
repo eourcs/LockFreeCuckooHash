@@ -1,8 +1,8 @@
 ### Summary
 
-We are going to implement a fully concurrent lock-free hash table implementation based on Nguyen and Tsigas. We hope to improve upon their design with various optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
+We are going to implement a fully concurrent lock-free hash table implementation based on _Nguyen and Tsigas_. We hope to improve upon their design with various optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
 
-### Markdown
+### Background
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
