@@ -6,6 +6,10 @@ We are going to implement a fully concurrent lock-free hash table implementation
 
 Hash tables are an incredibly common data structure with a wide variety of use cases, including removing duplicates, computing edge contraction, and generating binary decision diagrams. A common variant of the hash table uses "cuckoo hashing," which employs two distinct hash functions and guarantees worst case _O(1)_ lookup. 
 
+The search for a highly-performant general purpose hash table is a very active and robust field of study. Recent implementations by _names_ employ either employ coarse and fine grained locking, or are lock-free but only under a constrained set of operations. In 2014, _Nguyen and Tsigas_ published what they believed to be the world's first implementation of a fully-concurrent lock-free hash table. Under their experiments, their design proved to be faster than the current state of the art.
+
+We wish to improve upon their implementation by combining various optimizations suggested in the literature.
+
 ```markdown
 Syntax highlighted code block
 
