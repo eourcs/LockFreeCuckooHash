@@ -10,6 +10,33 @@ The search for a highly-performant general purpose hash table is a very active a
 
 We wish to improve upon their implementation by combining various optimizations suggested in the literature.
 
+### Resources
+We will be writing our implementation from scratch in C++ based on a paper entitled 
+[Lock-free Cuckoo Hashing](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf) (Nguyen, Tsigas) and will be extending this implementation
+with several optimizations, some taken from the thesis entitled 
+[Shared-Memory Parallelism Can Be Simple, Fast, and Scalable](https://people.eecs.berkeley.edu/~jshun/thesis.pdf) (Shun 2015). 
+We will run benchmarks for our implementations on a latedays node and should not 
+require any additional resources.
+
+### Goals and Deliverables
+//TODO
+
+### Platform Choice
+The latedays cluster is appropriate for benchmarking our implementations because it 
+provides a high degree of potential
+parallelism, with 24 execution contexts on each node, while also being easily accessible to us.
+It will allow us to test the performance of our implementations with a variety
+of thread counts, providing more complete and interesting results than what could
+be gathered on other available CMU machines. 
+
+C++ is an appropriate language for our implementation because
+it is very capable of producing high-performance code, and we are both familiar with
+it after using it for previous assignments in 15418.
+
+### Schedule
+//TODO
+
+
 ```markdown
 Syntax highlighted code block
 
