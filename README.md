@@ -11,6 +11,10 @@ The search for a highly-performant general purpose hash table is a very active a
 We wish to improve upon their implementation by combining various optimizations suggested in the literature.
 
 ### Challenges
+Our problem is challenging because lock-free programming requires a complex set of 
+dependencies and invariants, so extending the existing implementations will require
+great care. Also, our extensions will almost certainly be original contributions to
+the field, so we will not have much prior work to draw from.
 
 ### Resources
 We will be writing our implementation from scratch in C++ based on a paper entitled 
