@@ -39,14 +39,6 @@ it is very capable of producing high-performance code, and we are both familiar 
 it after using it for previous assignments in 15-418.
 
 ### Schedule
-Date | Plan | Status
----- | ---- | ------
-04/10-04/17 | Implement benchmarking/testing suite. Find interesting potential optimizations. Revise proposal as needed.  | 
-04/18-04/24 | Implement lock-free hash table. | 
-04/25-05/01 | One week reserved for debugging, testing, etc. |
-05/02-05/09 | Implement and test optimizations. |
-05/11       | Finalize project report, prepare presentation. |
-
 |---
 | Date | Plan | Status
 |-|-|-
@@ -55,7 +47,6 @@ Date | Plan | Status
 |04/25-05/01 | One week reserved for debugging, testing, etc.
 |05/02-05/09 | Implement and test optimizations.
 |05/11       | Finalize project report, prepare presentation.
-
 
 ### References
 * [1] [Li et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
