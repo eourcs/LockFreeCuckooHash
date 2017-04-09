@@ -48,16 +48,14 @@ Date | Plan | Status
 05/11       | Finalize project report, prepare presentation. |
 
 |---
-| Default aligned | Left aligned | Center aligned | Right aligned
-|-|:-|:-:|-:
-| First body part | Second cell | Third cell | fourth cell
-| Second line |foo | **strong** | baz
-| Third line |quux | baz | bar
-|---
-| Second body
-| 2 line
-|===
-| Footer row
+| Date | Plan | Status
+|-|-|-
+|04/10-04/17 | Implement benchmarking/testing suite. Find interesting potential optimizations. Revise proposal as needed.
+|04/18-04/24 | Implement lock-free hash table. 
+|04/25-05/01 | One week reserved for debugging, testing, etc.
+|05/02-05/09 | Implement and test optimizations.
+|05/11       | Finalize project report, prepare presentation.
+
 
 ### References
 * [1] [Li et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
