@@ -1,3 +1,3 @@
 theme: jekyll-theme-cayman
 title: Lock-free Cuckoo Hash
-description: An optimized, fully concurrent lock-free cuckoo hash table implementation, by Calvin Giroud and Ross Coker
+description: An optimized, fully concurrent lock-free cuckoo hash table implementation, by Ross Coker and Calvin Giroud
