@@ -17,10 +17,8 @@ great care. Also, our extensions will almost certainly be original contributions
 the field, so we will not have much prior work to draw from.
 
 ### Resources
-We will be writing our implementation from scratch in C++ based on a paper entitled 
-[Lock-free Cuckoo Hashing](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf) (Nguyen, Tsigas) and will be extending this implementation
-with several optimizations, some taken from the thesis entitled 
-[Shared-Memory Parallelism Can Be Simple, Fast, and Scalable](https://people.eecs.berkeley.edu/~jshun/thesis.pdf) (Shun 2015). 
+We will be writing our implementation from scratch in C++ based on a paper by Nguyen and Tsigas [3] and will be extending this implementation
+with several optimizations, some taken from Julian Shun's thesis [2]. 
 We will run benchmarks for our implementations on a latedays node and should not 
 require any additional resources.
 
@@ -50,6 +48,6 @@ Date | Plan | Status
 05/11       | Finalize project report, prepare presentation. |
 
 ### References
-* [1] [Li, et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
+* [1] [Li et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
 * [2] [Shun, "Shared-Memory Parallelism Can Be Simple, Fast, and Scalable"](https://people.eecs.berkeley.edu/~jshun/thesis.pdf)
 * [3] [Nguyen and Tsigas, "Lock-free Cuckoo Hashing"](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf)
