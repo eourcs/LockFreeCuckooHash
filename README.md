@@ -1,6 +1,6 @@
 ### Summary
 
-We are going to implement a fully concurrent lock-free hash table implementation based on _Nguyen and Tsigas_ [3]. We hope to improve upon their design with optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
+We are going to implement a fully concurrent lock-free hash table implementation based on Nguyen and Tsigas [3]. We hope to improve upon their design with optimizations suggested in the literature. This implementation will be benchmarked against other hash table implementations under various read/write workloads.
 
 ### Background
 
