@@ -24,7 +24,7 @@ require any additional resources.
 
 ### Goals and Deliverables
 We plan to achieve an implementation of a concurrent lock-free hash table with better
-performance on one of our chosen metrics (throughput, space utilization, possibly others) compared to the existing lock-free implementation as well as other fast hash table implementations. We hope to acheive an implementation with better performance on all metrics. 
+performance on one of our chosen metrics (throughput, space utilization, possibly others) compared to the existing lock-free implementation as well as other fast hash table implementations. We hope to achieve an implementation with better performance on all metrics. 
 We will evaluate wall clock performance against std::unordered_map and the 
 baseline lock-free cuckoo hash table, using a variety of insert/update/remove
 access patterns and a variety of thread counts. Our demo will consist of graphs demonstrating the results of our benchmarks. 
