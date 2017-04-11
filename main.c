@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
   char *out_file   = NULL;
 
   // Parse command line arguments
-  while ((c = getopt(argc, argv, "nto:rh")))
+  while ((c = getopt(argc, argv, "nto:rh")) != -1)
   {
     switch (c)
     {
@@ -35,11 +35,13 @@ int main(int argc, char *argv[])
         read_percent = *optarg;
         break;
       case 'h':
-        printf("Options:"
-               "-n num_elements"
-               "-t num_threads"
-               "-r read_percent"
-               "-o output_file");
+        printf("Options: \n"
+               "-n num_elements \n"
+               "-t num_threads \n"
+               "-r read_percent \n"
+               "-o output_file \n");
+        break;
+      default:
         break;
     }
   }
