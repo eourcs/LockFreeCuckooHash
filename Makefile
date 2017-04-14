@@ -1,4 +1,4 @@
 all:
-	g++ src/main.cpp -o benchmark -std=c++11
+	g++ src/main.cpp src/std_hash_table.cpp -o benchmark -std=c++11
 clean:
 	rm benchmark
