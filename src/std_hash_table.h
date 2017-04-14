@@ -7,7 +7,7 @@
 struct Std_hash_table : Hash_table {
   std::unordered_map<int, int> map;
 
-  Std_hash_table();
+  Std_hash_table(int capacity);
 
   std::pair<int, bool> search(int key);
   void                 insert(int key, int val);
