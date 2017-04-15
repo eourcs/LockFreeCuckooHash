@@ -1,8 +1,8 @@
 #include "hash_table.h"
 #include "std_hash_table.h"
 
-Std_hash_table::Std_hash_table() {
-  map = std::unordered_map<int, int>();
+Std_hash_table::Std_hash_table(int capacity) {
+  map = std::unordered_map<int, int>(capacity);
 }
 
 std::pair<int, bool> Std_hash_table::search(int key) {
