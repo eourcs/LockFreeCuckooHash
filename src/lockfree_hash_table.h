@@ -8,7 +8,9 @@ struct Hash_entry {
   int val;
 };
 
-typedef std::pair<Hash_entry*, int> Count_ptr;
+typedef std::pair<Hash_entry*, int> *Count_ptr;
+
+enum Find_result { FIRST, SECOND, NIL };
 
 struct Lockfree_hash_table : Hash_table {
   Lockfree_hash_table(int capacity);
@@ -19,10 +21,13 @@ struct Lockfree_hash_table : Hash_table {
 
 private:
   Count_ptr *table[2];  
+  int size1;
+  int size2;
 
   int hash1(int key);
   int hash2(int key);
-  int find(int key, Count_ptr &ptr1, Count_ptr &ptr2);
+  bool check_counter(int ts1, int ts2, int ts1x, int ts2x);
+  Find_result find(int key, Count_ptr &ptr1, Count_ptr &ptr2);
   void relocate(int which, int index);
   void help_relocate(int which, int index, bool initiator);
   void del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr ptr2);
