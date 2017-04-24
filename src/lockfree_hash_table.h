@@ -8,7 +8,8 @@ struct Hash_entry {
   int val;
 };
 
-typedef std::pair<Hash_entry*, int> *Count_ptr;
+// Alternate count_ptr definition using unused bits
+typedef Hash_entry* Count_ptr;
 
 enum Find_result { FIRST, SECOND, NIL };
 
