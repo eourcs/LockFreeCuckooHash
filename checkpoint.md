@@ -28,4 +28,6 @@ For the parallelism competition, we plan to show a graph with the results of our
 ### Concerns
 
 1. Planned improvements to the initial lock-free hash table implementations may break invariants.
-2. We haven't decided concretely on which optimizations to implement.
+2. No prelimanary results yet. It will be difficult to debug performance-related issues.
+3. We haven't decided concretely on which optimizations to implement.
+
