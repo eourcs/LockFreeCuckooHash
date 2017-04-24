@@ -105,8 +105,8 @@ void BenchmarkLockFreeHT::benchmark_all()
     // Publish Results
     double best_time = *std::min_element(results.begin(), results.end());
     double avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
-    std::cout << "\t" << "Max Throughput: " << m_op_count / best_time * 1000.0 << " ops/ms" << std::endl;
-    std::cout << "\t" << "Avg Throughput: " << m_op_count / avg_time  * 1000.0 << " ops/ms" << std::endl;
+    std::cout << "\t" << "Max Throughput: " << m_op_count / best_time / 1000.0 << " ops/ms" << std::endl;
+    std::cout << "\t" << "Avg Throughput: " << m_op_count / avg_time  / 1000.0 << " ops/ms" << std::endl;
 }
 
 void BenchmarkLockFreeHT::run()
