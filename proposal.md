@@ -1,7 +1,8 @@
-## Proposal
+---
+title: Proposal
+---
 
-[Proposal](proposal.md)
-[Checkpoint](checkpoint.md)
+## Proposal
 
 ### Summary
 
