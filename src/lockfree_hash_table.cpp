@@ -1,6 +1,23 @@
 #include "Lockfree_hash_table.h"
+#include <cstdint>
 
-#define IS_MARKED(x) ((size_t)(x) % 2)
+// Inline bit twiddling functions
+inline uint16_t get_counter(Count_ptr ptr) { 
+  return (uint16_t)(((size_t)ptr >> 48) & 0xFFFF);
+}
+
+inline Count_ptr set_counter(Count_ptr ptr, uint16_t counter) {
+  return (Count_ptr)((size_t)ptr | (size_t)counter);
+}
+
+inline bool get_marked(Hash_entry *ent) {
+  return ((size_t)ent & 1) == 1;
+}
+
+inline Hash_entry *set_marked(Hash_entry *ent, bool marked) {
+  return marked ? (Hash_entry*)((size_t)ent | 1) 
+                : (Hash_entry*)((size_t)ent & (~1));
+}
 
 Lockfree_hash_table::Lockfree_hash_table(int capacity) {
   size1 = capacity / 2;
