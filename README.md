@@ -10,8 +10,10 @@ TODO
 |---
 | Date | Plan | Status
 |-|-|-
-|04/10-04/17 | Implement benchmarking/testing suite. Find interesting potential optimizations. Revise proposal as needed.
-|04/18-04/24 | Implement lock-free hash table. 
-|04/25-05/01 | One week reserved for debugging, testing, etc.
-|05/02-05/09 | Implement and test optimizations.
-|05/11       | Finalize project report, prepare presentation.
+|04/10-04/17 | Implemented benchmarking/testing suite (**Calvin**), defined interface for hash table (**Ross**), wrote basic python script for graph generation (**Ross**) | **Complete**
+|04/18-04/24 | Wrote the initial lock-free hash table implementation. | **Complete**
+|04/25-04/27 | Debug correctness of the initial implementation
+|04/28-05/01 | Benchmark and debug performance of the initial implementation
+|05/02-05/04 | Discuss and implement optimizations
+|05/05-05/08 | Test and continue implementing optimizations
+|05/09-05/11 | Finalize project report, prepare presentation.
