@@ -4,8 +4,8 @@ title: Checkpoint
 
 ### Work Completed
 We have implemented the following:
-1. A fairly-extensible testing framework for testing read/write throughput for both sequential and parallel hash tables.
-2. A nearly-complete implementation of the lock-free hash table based on Nguyen and Tsigas. Subject to additional work/testing.
+1. A fairly extensible testing framework for testing read/write throughput for both sequential and parallel hash tables.
+2. A nearly complete implementation of the lock-free hash table based on Nguyen and Tsigas. Subject to additional work/testing.
 
 ### Updated Schedule
 |---
