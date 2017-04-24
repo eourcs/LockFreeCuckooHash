@@ -1,4 +1,6 @@
-#include "Lockfree_hash_table.h"
+#include "lockfree_hash_table.h"
+
+#define THRESHOLD 50
 
 Lockfree_hash_table::Lockfree_hash_table(int capacity) {
   size1 = capacity / 2;
@@ -30,11 +32,118 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2)
 }
 
 void Lockfree_hash_table::relocate(int which, int index) {
-  //TODO
+  int  route[THRESHOLD];
+  bool found = false;
+  int  start_level = 0;
+
+  // Path Discovery
+  int idx = index;
+  int tbl = which;
+  int depth = start_level;
+  int pre_idx;
+  while (!found && depth < THRESHOLD)
+  {
+    Count_ptr ptr1 = table[tbl][idx];
+    Hash_entry* e1 = ptr1->first;
+    while (e1 & 0x1)
+    {
+      help_relocate(tbl, idx, false)
+      e1 = table[tbl][idx]->first;
+    }
+
+    if (e1 != NULL)
+    {
+      route[depth] = idx;
+      int key = e1->key;
+      pre_idx = idx;
+      tbl     = 1 - tbl;
+      idx     = (tbl == 0) ? hash1(key) : hash2(key); 
+    }
+    else
+    {
+      found = true;
+    }
+     
+    depth++;
+  }
+
+  if (found)
+  {
+    tbl = 1 - tbl;
+    for (int i = depth-1; i >= 0; i--, tbl = 1 - tbl;)
+    {
+      idx = route[i];
+      Count_ptr ptr1 = table[tbl][idx];
+      Hash_entry* e1 = ptr1->first;
+      if (e1 & 0x1)
+      {
+        help_relocate(tbl, idx, false);
+        e1 = table[tbl][idx]->first;
+      }
+
+      if (e1 == NULL)
+        continue;
+
+      int dest_idx = (tbl == 0) ? hash2(e1->key) : hash1(e1->key);
+      Count_ptr ptr2 = table[1-tbl][dest_idx];
+
+      if (e2 != NULL)
+      {
+        start_level = i + 1;
+        idx = dest_idx;
+        tbl = 1 - tbl;
+        //goto path_discovery;
+      }
+      help_relocate(tbl, idx, false);
+    }
+  }
+
+  return found;
 }
 
 void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
-  //TODO
+  while (1)
+  {
+    Count_ptr ptr1  = table[which][index];
+    Hash_entry* src = ptr1->first;
+    while (initiator && !(src & 0x1))
+    {
+      if (src == NULL)
+        return;
+
+      __sync_bool_compare_and_swap(&table[which][index], ptr1, ptr1 | 0x1);
+      ptr1 = table[which][index];
+      src  = ptr1->first;
+    }
+
+    if (!(src & 0x1))
+      return;
+
+    int hd = (1 - which) ? hash1(src->key) : hash2(src->key);
+    Count_ptr ptr2  = table[1-which][hd];
+    Hash_entry* dst = ptr2->first;
+    if (dst == NULL)
+    {
+      int nCnt = ptr1->second > ptr2->second ? ptr1->second+1 : ptr2->second+1;
+      if (ptr1 != table[which][index])
+        continue;
+      if (__sync_bool_compare_and_swap(&table[1-which][hd], ptr2, std::make_pair()))
+      {
+        __sync_bool_compare_and_swap(&table[which][index], ptr1, );
+        return;
+      }
+
+      if (src == dst)
+      {
+        __sync_bool_compare_and_swap(&table[which][index], ptr1, );
+        return;
+      }
+
+      __sync_bool_compare_and_swap(&table[which][index], ptr1, );
+      return false;
+    }
+    
+  }
 }
 
 void Lockfree_hash_table::del_dup(
