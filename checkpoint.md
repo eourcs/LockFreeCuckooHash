@@ -8,7 +8,7 @@ filename: checkpoint
 
 ### Summary
 
-Project is going fairly well. Given our current timeline, we should be able to hit most of deliverables outlined in the proposal. The lock-free hash table implementation was the bulk of the work intended for this project as it includes many interesting ideas (path discovery, relocation marking, ABA counters, two-round querying, etc.). The optimizations we intend to implement on top are much more nitty-gritty.
+Project is going fairly well. Given our current timeline, we should be able to hit most of deliverables outlined in the proposal. The lock-free hash table implementation was the bulk of the work intended for this project as it includes many interesting ideas (path discovery, relocation marking, ABA counters, two-round querying, etc.). The optimizations we intend to implement on top are much more nitty-gritty. As of now, all planned optimizations are provisionally on the schedule, but we may decide to axe a few of them if they prove not to be of particular interest.
 
 ### Work Completed
 
