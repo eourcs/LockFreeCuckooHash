@@ -13,8 +13,8 @@
     <section class="page-header">
       <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
-      <a href="https://eourcs.github.io/LockFreeCuckooHash/proposal" class="btn">Proposal</a>
-      <a href="https://eourcs.github.io/LockFreeCuckooHash/checkpoint" class="btn">Checkpoint</a>
+      <a href="{{ proposal }}" class="btn">Proposal</a>
+      <a href="{{ checkpoint }}" class="btn">Checkpoint</a>
       {% if site.github.is_project_page %}
         <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
       {% endif %}
