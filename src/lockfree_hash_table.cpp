@@ -5,10 +5,10 @@
 
 // Inline bit twiddling functions
 inline Count_ptr make_pointer(Hash_entry* e, uint16_t count) {
-  return (Count_ptr)((((uint64_t)count) << 48) | (uint64_t)e);
+  return (Count_ptr)((((uint64_t)count) << 48) | ((uint64_t)e & 0xFFFFFFFFFFFF));
 }
 inline Hash_entry* get_pointer(Count_ptr ptr) {
-  return (Hash_entry*)((uint64_t)ptr & 0x00FFFFFE);
+  return (Hash_entry*)((uint64_t)ptr & 0xFFFFFFFFFFFF);
 }
 
 inline uint16_t get_counter(Count_ptr ptr) { 
@@ -44,28 +44,28 @@ int Lockfree_hash_table::hash1(int key) {
   key = key ^ (key >> 4);
   key = key * c2;
   key = key ^ (key >> 15);
-  return key;
+  return key % size1;
 }
 
 int Lockfree_hash_table::hash2(int key) {
   key = ((key >> 16) ^ key) * 0x45d9f3b;
   key = ((key >> 16) ^ key) * 0x45d9f3b;
   key = (key >> 16) ^ key;
-  return key;
+  return key % size2;
 }
 
 bool Lockfree_hash_table::check_counter(int ts1, int ts2, int ts1x, int ts2x) {
   return (ts1x >= ts1 + 2) && (ts2x >= ts2 + 2) && (ts2x >= ts1 + 3);
 }
 
-Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2) {
+Find_result Lockfree_hash_table::find(int key, Count_ptr &e1, Count_ptr &e2) {
   int h1 = hash1(key);
   int h2 = hash2(key);
 
-  Find_result result;
+  Find_result result = (Find_result)-1;
 
   while (true) {
-    Count_ptr e1 = table[0][h1];
+    e1 = table[0][h1];
     int ts1 = get_counter(e1);
 
     if (get_pointer(e1)) {
@@ -74,11 +74,11 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2)
         continue; 
       }
 
-      if (e1->key == key) 
+      if (get_pointer(e1)->key == key) 
         result = FIRST; 
     }
 
-    Count_ptr e2 = table[1][h2];
+    e2 = table[1][h2];
     int ts2 = get_counter(e2);
 
     if (get_pointer(e2)) {
@@ -87,9 +87,9 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2)
         continue; 
       }
 
-      if (e2->key == key) {
+      if (get_pointer(e2)->key == key) {
         if (result == FIRST) {
-          del_dup(h1, ptr1, h2, ptr2);
+          del_dup(h1, e1, h2, e2);
         } else {
           result = SECOND;
         }
@@ -100,10 +100,10 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2)
       return result;
     }
 
-    ptr1 = table[0][h1];
-    ptr2 = table[1][h2];
+    e1 = table[0][h1];
+    e2 = table[1][h2];
 
-    if (check_counter(ts1, ts2, get_counter(ptr1), get_counter(ptr2))) {
+    if (check_counter(ts1, ts2, get_counter(e1), get_counter(e2))) {
       continue;
     } else {
       return NIL;
@@ -254,16 +254,18 @@ std::pair<int, bool> Lockfree_hash_table::search(int key) {
   int h2 = hash2(key);
 
   while (true) {
-    Count_ptr e1 = table[0][h1];
+    Count_ptr ptr1 = table[0][h1];
+    Hash_entry *e1 = get_pointer(ptr1);
     int ts1 = get_counter(e1);
 
-    if (get_pointer(e1) && e1->key == key)
+    if (e1 && e1->key == key)
       return std::make_pair(e1->val, true);
 
-    Count_ptr e2 = table[1][h2];
+    Count_ptr ptr2 = table[1][h2];
+    Hash_entry *e2 = get_pointer(ptr2);
     int ts2 = get_counter(e2);
 
-    if (get_pointer(e2) && e2->key == key)
+    if (e2 && e2->key == key)
       return std::make_pair(e2->val, true);
 
     int ts1x = get_counter(table[0][h1]);
@@ -290,12 +292,12 @@ void Lockfree_hash_table::insert(int key, int val) {
     Find_result result = find(key, e1, e2);
 
     if (result == FIRST) {
-      e1->val = val; 
+      get_pointer(e1)->val = val; 
       return;
     }
 
     if (result == SECOND) {
-      e2->val = val;
+      get_pointer(e2)->val = val;
       return;
     }
 
