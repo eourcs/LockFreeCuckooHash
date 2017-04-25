@@ -1,5 +1,7 @@
 ---
 title: Checkpoint
+layout: defaults
+filename: checkpoint
 ---
 
 ## Checkpoint
