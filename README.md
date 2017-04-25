@@ -1,7 +1,6 @@
 ---
 title: Proposal
 layout: defaults
-filename: proposal
 ---
 
 ## Proposal
