@@ -1,6 +1,7 @@
 ---
 title: Proposal
 layout: defaults
+filename: index
 ---
 
 ## Proposal
