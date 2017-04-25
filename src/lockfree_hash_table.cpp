@@ -12,16 +12,16 @@ inline Hash_entry* get_pointer(Count_ptr ptr) {
 }
 
 inline uint16_t get_counter(Count_ptr ptr) { 
-  return (uint16_t)(((size_t)ptr >> 48) & 0xFFFF);
+  return (uint16_t)(((uint64_t)ptr >> 48) & 0xFFFF);
 }
 
 inline bool get_marked(Hash_entry *ent) {
-  return ((size_t)ent & 1) == 1;
+  return ((uint64_t)ent & 1) == 1;
 }
 
 inline Hash_entry *set_marked(Hash_entry *ent, bool marked) {
-  return marked ? (Hash_entry*)((size_t)ent | 1) 
-                : (Hash_entry*)((size_t)ent & (~1));
+  return marked ? (Hash_entry*)((uint64_t)ent | 1) 
+                : (Hash_entry*)((uint64_t)ent & (~1));
 }
 
 Lockfree_hash_table::Lockfree_hash_table(int capacity) {
@@ -38,13 +38,20 @@ void rehash() {
 
 // Private
 int Lockfree_hash_table::hash1(int key) {
-  //TODO
-  return 0;
+  int c2=0x27d4eb2d; // a prime or an odd constant
+  key = (key ^ 61) ^ (key >> 16);
+  key = key + (key << 3);
+  key = key ^ (key >> 4);
+  key = key * c2;
+  key = key ^ (key >> 15);
+  return key;
 }
 
 int Lockfree_hash_table::hash2(int key) {
-  //TODO
-  return 0;
+  key = ((key >> 16) ^ key) * 0x45d9f3b;
+  key = ((key >> 16) ^ key) * 0x45d9f3b;
+  key = (key >> 16) ^ key;
+  return key;
 }
 
 bool Lockfree_hash_table::check_counter(int ts1, int ts2, int ts1x, int ts2x) {
@@ -109,7 +116,6 @@ bool Lockfree_hash_table::relocate(int which, int index) {
   bool found = false;
   int  start_level = 0;
 
-  // Path Discovery
 path_discovery:
   int idx = index;
   int tbl = which;
@@ -126,7 +132,7 @@ path_discovery:
       e1 = get_pointer(table[tbl][idx]);
     }
 
-    if (e1 != NULL)
+    if (e1 != nullptr)
     {
       route[depth] = idx;
       int key = e1->key;
@@ -157,14 +163,14 @@ path_discovery:
         e1 = get_pointer(table[tbl][idx]);
       }
 
-      if (e1 == NULL)
+      if (e1 == nullptr)
         continue;
 
       int dest_idx = (tbl == 0) ? hash2(e1->key) : hash1(e1->key);
       Count_ptr ptr2 = table[1-tbl][dest_idx];
       Hash_entry* e2 = get_pointer(ptr2);
 
-      if (e2 != NULL)
+      if (e2 != nullptr)
       {
         start_level = i + 1;
         idx = dest_idx;
@@ -185,7 +191,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
     Hash_entry* src = get_pointer(ptr1);
     while (initiator && !get_marked(src))
     {
-      if (src == NULL)
+      if (src == nullptr)
         return;
 
       __sync_bool_compare_and_swap(&table[which][index], ptr1, 
@@ -204,7 +210,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
     uint16_t ts1 = get_counter(ptr1);
     uint16_t ts2 = get_counter(ptr2);
 
-    if (dst == NULL)
+    if (dst == nullptr)
     {
       int nCnt = ts1 > ts2 ? ts1 + 1 : ts2 + 1;
       if (ptr1 != table[which][index])
@@ -213,14 +219,14 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
                                        make_pointer(src, nCnt)))
       {
         __sync_bool_compare_and_swap(&table[which][index], ptr1, 
-                                     make_pointer(NULL, ts1+1));
+                                     make_pointer(nullptr, ts1+1));
         return;
       }
 
       if (src == dst)
       {
         __sync_bool_compare_and_swap(&table[which][index], ptr1, 
-                                     make_pointer(NULL, ts1+1));
+                                     make_pointer(nullptr, ts1+1));
         return;
       }
 
@@ -239,7 +245,7 @@ void Lockfree_hash_table::del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr 
     return;
 
   __sync_bool_compare_and_swap(&table[1][idx2], ptr2, 
-                               make_pointer(NULL, get_counter(ptr2)));
+                               make_pointer(nullptr, get_counter(ptr2)));
 }
   
 // Public
@@ -331,14 +337,14 @@ void Lockfree_hash_table::remove(int key) {
 
     if (ret == FIRST) {
       if (__sync_bool_compare_and_swap(
-            &table[0][h1], e1, make_pointer(NULL, get_counter(e1)))) {
+            &table[0][h1], e1, make_pointer(nullptr, get_counter(e1)))) {
         return;
       }
     } else if (ret == SECOND) {
       if (table[0][h1] != e1) 
         continue;
       if (__sync_bool_compare_and_swap(
-            &table[1][h2], e2, make_pointer(NULL, get_counter(e2)))) {
+            &table[1][h2], e2, make_pointer(nullptr, get_counter(e2)))) {
         return;
       }
     }
