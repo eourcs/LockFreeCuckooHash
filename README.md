@@ -1,3 +1,6 @@
+---
+layout: defaults
+---
 
 ## Proposal
 
