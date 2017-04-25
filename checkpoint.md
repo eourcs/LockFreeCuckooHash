@@ -1,6 +1,10 @@
 ---
 title: Checkpoint
+layout: defaults
+filename: checkpoint
 ---
+
+## Checkpoint
 
 ### Work Completed
 
@@ -28,6 +32,6 @@ For the parallelism competition, we plan to show a graph with the results of our
 ### Concerns
 
 1. Planned improvements to the initial lock-free hash table implementations may break invariants.
-2. No prelimanary results yet. It will be difficult to debug performance-related issues.
+2. No preliminary results yet. It will be difficult to debug performance-related issues.
 3. We haven't decided concretely on which optimizations to implement.
 

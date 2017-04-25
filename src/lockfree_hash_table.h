@@ -29,7 +29,7 @@ private:
   int hash2(int key);
   bool check_counter(int ts1, int ts2, int ts1x, int ts2x);
   Find_result find(int key, Count_ptr &ptr1, Count_ptr &ptr2);
-  void relocate(int which, int index);
+  bool relocate(int which, int index);
   void help_relocate(int which, int index, bool initiator);
   void del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr ptr2);
 };

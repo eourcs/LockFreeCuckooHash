@@ -1,5 +1,5 @@
 #include "benchmark_unordered_map.h"
-#include "benchmark_lockfree_ht.h"
+//#include "benchmark_lockfree_ht.h"
 
 #include "thread_service.h"
 #include "../common/cycle_timer.h"
@@ -28,24 +28,25 @@ int main(int argc, char *argv[])
   char *out_file   = NULL;
 
   // Parse cmd args
-  while ((c = getopt(argc, argv, "nto:rhl")) != -1)
+  while ((c = getopt(argc, argv, "n:t:or:hl:")) != -1)
   {
     switch (c)
     {
       case 'n':
-        op_count = *optarg;
+        op_count = atoi(optarg);
         break;
       case 't':
-        num_threads = *optarg;
+        printf("Here");
+        num_threads = atoi(optarg);
         break;
       case 'o':
         out_file = optarg;
         break;
       case 'r':
-        read_percent = *optarg;
+        read_percent = atoi(optarg);
         break;
       case 'l':
-        load_factor = *optarg;
+        load_factor = atoi(optarg);
         break;
       case 'h':
         printf("Options: \n"
