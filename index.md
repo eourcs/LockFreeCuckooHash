@@ -1,5 +1,7 @@
 ---
 title: Proposal
+layout: template
+filename: index.md
 ---
 
 ## Proposal
