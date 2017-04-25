@@ -1,5 +1,7 @@
 ---
+title: index
 layout: defaults
+filename: index
 ---
 
 ## Proposal
