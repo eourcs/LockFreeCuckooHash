@@ -1,7 +1,7 @@
 ---
 title: Proposal
-layout: template
-filename: index.md
+layout: defaults
+filename: proposal
 ---
 
 ## Proposal
