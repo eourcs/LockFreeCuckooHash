@@ -15,14 +15,6 @@ inline uint16_t get_counter(Count_ptr ptr) {
   return (uint16_t)(((size_t)ptr >> 48) & 0xFFFF);
 }
 
-inline Count_ptr set_counter(Count_ptr ptr, uint16_t counter) {
-  return (Count_ptr)((size_t)ptr | (size_t)counter);
-}
-
-inline bool is_null_entry(Count_ptr ptr) {
-  return ((size_t)ptr & 0xFFFFFFFFFFFF) != 0;
-}
-
 inline bool get_marked(Hash_entry *ent) {
   return ((size_t)ent & 1) == 1;
 }
@@ -69,7 +61,7 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2)
     Count_ptr e1 = table[0][h1];
     int ts1 = get_counter(e1);
 
-    if (!is_null_entry(e1)) {
+    if (get_pointer(e1)) {
       if (get_marked(e1)) {
         help_relocate(0, h1, false);
         continue; 
@@ -82,7 +74,7 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2)
     Count_ptr e2 = table[1][h2];
     int ts2 = get_counter(e2);
 
-    if (!is_null_entry(e2)) {
+    if (get_pointer(e2)) {
       if (get_marked(e2)) {
         help_relocate(1, h2, false);
         continue; 
@@ -259,13 +251,13 @@ std::pair<int, bool> Lockfree_hash_table::search(int key) {
     Count_ptr e1 = table[0][h1];
     int ts1 = get_counter(e1);
 
-    if (!is_null_entry(e1) && e1->key == key)
+    if (get_pointer(e1) && e1->key == key)
       return std::make_pair(e1->val, true);
 
     Count_ptr e2 = table[1][h2];
     int ts2 = get_counter(e2);
 
-    if (!is_null_entry(e2) && e2->key == key)
+    if (get_pointer(e2) && e2->key == key)
       return std::make_pair(e2->val, true);
 
     int ts1x = get_counter(table[0][h1]);
@@ -301,17 +293,17 @@ void Lockfree_hash_table::insert(int key, int val) {
       return;
     }
 
-    if (is_null_entry(e1)) { 
+    if (!get_pointer(e1)) { 
       if (!__sync_bool_compare_and_swap(
-            &table[0][h1], e1, set_counter(new_node, get_counter(e1)))) {
+            &table[0][h1], e1, make_pointer(new_node, get_counter(e1)))) {
         continue; 
       }
       return;
     }
 
-    if (is_null_entry(e2)) { 
+    if (!get_pointer(e2)) { 
       if (!__sync_bool_compare_and_swap(
-            &table[1][h2], e2, set_counter(new_node, get_counter(e2)))) {
+            &table[1][h2], e2, make_pointer(new_node, get_counter(e2)))) {
         continue; 
       }
       return;
@@ -339,14 +331,14 @@ void Lockfree_hash_table::remove(int key) {
 
     if (ret == FIRST) {
       if (__sync_bool_compare_and_swap(
-            &table[0][h1], e1, set_counter(NULL, get_counter(e1)))) {
+            &table[0][h1], e1, make_pointer(NULL, get_counter(e1)))) {
         return;
       }
     } else if (ret == SECOND) {
       if (table[0][h1] != e1) 
         continue;
       if (__sync_bool_compare_and_swap(
-            &table[1][h2], e2, set_counter(NULL, get_counter(e2)))) {
+            &table[1][h2], e2, make_pointer(NULL, get_counter(e2)))) {
         return;
       }
     }
