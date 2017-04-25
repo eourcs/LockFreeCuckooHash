@@ -2,6 +2,8 @@
 title: Checkpoint
 ---
 
+## Checkpoint
+
 ### Work Completed
 
 We have implemented the following:
