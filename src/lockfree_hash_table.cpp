@@ -140,6 +140,8 @@ path_discovery:
       e1 = get_pointer(table[tbl][idx]);
     }
 
+    ptr1 = make_pointer(e1, get_counter(ptr1));
+
     if (pptr == ptr1 || 
         (get_pointer(pptr) && get_pointer(ptr1) && 
          get_pointer(pptr)->key == get_pointer(ptr1)->key))
@@ -154,7 +156,7 @@ path_discovery:
     {
       route[depth] = idx;
       int key = e1->key;
-      pptr    = ptr1; 
+      pptr    = ptr1;
       pre_idx = idx;
       tbl     = 1 - tbl;
       idx     = (tbl == 0) ? hash1(key) : hash2(key); 
