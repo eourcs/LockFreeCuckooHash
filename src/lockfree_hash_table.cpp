@@ -132,7 +132,7 @@ path_discovery:
       e1 = get_pointer(table[tbl][idx]);
     }
 
-    if (pptr == ptr1 && get_pointer(pptr)->key == get_pointer(ptr1)->key)
+    if (pptr == ptr1 || get_pointer(pptr)->key == get_pointer(ptr1)->key)
     {
       if (tbl == 0)
         del_dup(idx, ptr1, pre_idx, pptr);
