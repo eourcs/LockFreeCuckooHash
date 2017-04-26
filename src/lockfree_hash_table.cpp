@@ -30,6 +30,14 @@ Lockfree_hash_table::Lockfree_hash_table(int capacity) {
 
   table[0] = new Count_ptr[size1]();
   table[1] = new Count_ptr[size2]();
+
+  for (int i = 0; i < size1; i++) {
+    table[0][i] = 0;
+  }
+
+  for (int i = 0; i < size2; i++) {
+    table[1][i] = 0;
+  }
 }
 
 void rehash() {
@@ -57,38 +65,38 @@ bool Lockfree_hash_table::check_counter(int ts1, int ts2, int ts1x, int ts2x) {
   return (ts1x >= ts1 + 2) && (ts2x >= ts2 + 2) && (ts2x >= ts1 + 3);
 }
 
-Find_result Lockfree_hash_table::find(int key, Count_ptr &e1, Count_ptr &e2) {
+Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2) {
   int h1 = hash1(key);
   int h2 = hash2(key);
 
   Find_result result = (Find_result)-1;
 
   while (true) {
-    e1 = table[0][h1];
-    int ts1 = get_counter(e1);
+    ptr1 = table[0][h1];
+    int ts1 = get_counter(ptr1);
 
-    if (get_pointer(e1)) {
-      if (get_marked(e1)) {
+    if (get_pointer(ptr1)) {
+      if (get_marked(ptr1)) {
         help_relocate(0, h1, false);
         continue; 
       }
 
-      if (get_pointer(e1)->key == key) 
+      if (get_pointer(ptr1)->key == key) 
         result = FIRST; 
     }
 
-    e2 = table[1][h2];
-    int ts2 = get_counter(e2);
+    ptr2 = table[1][h2];
+    int ts2 = get_counter(ptr2);
 
-    if (get_pointer(e2)) {
-      if (get_marked(e2)) {
+    if (get_pointer(ptr2)) {
+      if (get_marked(ptr2)) {
         help_relocate(1, h2, false);
         continue; 
       }
 
-      if (get_pointer(e2)->key == key) {
+      if (get_pointer(ptr2)->key == key) {
         if (result == FIRST) {
-          del_dup(h1, e1, h2, e2);
+          del_dup(h1, ptr1, h2, ptr2);
         } else {
           result = SECOND;
         }
@@ -99,10 +107,10 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &e1, Count_ptr &e2) {
       return result;
     }
 
-    e1 = table[0][h1];
-    e2 = table[1][h2];
+    ptr1 = table[0][h1];
+    ptr2 = table[1][h2];
 
-    if (check_counter(ts1, ts2, get_counter(e1), get_counter(e2))) {
+    if (check_counter(ts1, ts2, get_counter(ptr1), get_counter(ptr2))) {
       continue;
     } else {
       return NIL;
@@ -132,7 +140,9 @@ path_discovery:
       e1 = get_pointer(table[tbl][idx]);
     }
 
-    if (pptr == ptr1 && get_pointer(pptr)->key == get_pointer(ptr1)->key)
+    if (pptr == ptr1 || 
+        (get_pointer(pptr) && get_pointer(ptr1) && 
+         get_pointer(pptr)->key == get_pointer(ptr1)->key))
     {
       if (tbl == 0)
         del_dup(idx, ptr1, pre_idx, pptr);
@@ -210,7 +220,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
     if (!get_marked(src))
       return;
 
-    int hd = (1 - which) ? hash1(src->key) : hash2(src->key);
+    int hd = ((1 - which) == 0) ? hash1(src->key) : hash2(src->key);
     Count_ptr ptr2  = table[1-which][hd];
     Hash_entry* dst = get_pointer(ptr2);
 
@@ -288,7 +298,7 @@ std::pair<int, bool> Lockfree_hash_table::search(int key) {
 }
 
 void Lockfree_hash_table::insert(int key, int val) {
-  Count_ptr e1, e2;
+  Count_ptr ptr1, ptr2;
 
   Hash_entry *new_node = new Hash_entry();
   new_node->key = key;
@@ -298,35 +308,33 @@ void Lockfree_hash_table::insert(int key, int val) {
   int h2 = hash2(key);
 
   while (true) {
-    Find_result result = find(key, e1, e2);
+    Find_result result = find(key, ptr1, ptr2);
 
     if (result == FIRST) {
-      get_pointer(e1)->val = val; 
+      get_pointer(ptr1)->val = val; 
       return;
     }
 
     if (result == SECOND) {
-      get_pointer(e2)->val = val;
+      get_pointer(ptr2)->val = val;
       return;
     }
 
-    if (!get_pointer(e1)) { 
+    if (!get_pointer(ptr1)) { 
       if (!__sync_bool_compare_and_swap(
-            &table[0][h1], e1, make_pointer(new_node, get_counter(e1)))) {
+            &table[0][h1], ptr1, make_pointer(new_node, get_counter(ptr1)))) {
         continue; 
       }
       return;
     }
 
-    if (!get_pointer(e2)) { 
+    if (!get_pointer(ptr2)) { 
       if (!__sync_bool_compare_and_swap(
-            &table[1][h2], e2, make_pointer(new_node, get_counter(e2)))) {
+            &table[1][h2], ptr2, make_pointer(new_node, get_counter(ptr2)))) {
         continue; 
       }
       return;
     }
-
-    return;
 
     if (relocate(0, h1)) {
       continue;
