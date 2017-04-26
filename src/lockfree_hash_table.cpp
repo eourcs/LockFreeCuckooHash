@@ -33,7 +33,6 @@ Lockfree_hash_table::Lockfree_hash_table(int capacity) {
 }
 
 void rehash() {
-
 }
 
 // Private
@@ -113,15 +112,15 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &e1, Count_ptr &e2) {
 
 bool Lockfree_hash_table::relocate(int which, int index) {
   int  route[THRESHOLD];
-  bool found = false;
+  int  pre_idx;
   int  start_level = 0;
+  int  tbl = which;
+  int  idx = index;
 
 path_discovery:
-  int idx = index;
-  int tbl = which;
+  bool found = false;
   int depth = start_level;
-  int pre_idx;
-  while (!found && depth < THRESHOLD)
+  do
   {
     Count_ptr ptr1 = table[tbl][idx];
     Hash_entry* e1 = get_pointer(ptr1);
@@ -144,9 +143,7 @@ path_discovery:
     {
       found = true;
     }
-     
-    depth++;
-  }
+  } while (!found && ++depth < THRESHOLD);
 
   if (found)
   {
@@ -317,10 +314,13 @@ void Lockfree_hash_table::insert(int key, int val) {
       return;
     }
 
+    return;
+
     if (relocate(0, h1)) {
       continue;
     } else {
       rehash();
+      return;
     }
   }
 }
