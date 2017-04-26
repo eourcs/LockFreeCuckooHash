@@ -113,14 +113,14 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &e1, Count_ptr &e2) {
 
 bool Lockfree_hash_table::relocate(int which, int index) {
   int  route[THRESHOLD];
-  bool found = false;
   int  start_level = 0;
+  int  pre_idx;
+  int  idx = index;
+  int  tbl = which;
 
 path_discovery:
-  int idx = index;
-  int tbl = which;
-  int depth = start_level;
-  int pre_idx;
+  bool found = false;
+  int  depth = start_level;
   while (!found && depth < THRESHOLD)
   {
     Count_ptr ptr1 = table[tbl][idx];
