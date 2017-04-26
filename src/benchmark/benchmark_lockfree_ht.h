@@ -7,13 +7,16 @@
 #include <algorithm>
 #include <pthread.h>
 #include <array>
+#include <unordered_map>
 
 #include "../common/cycle_timer.h"
 #include "../lockfree_hash_table.h"
 #include "thread_service.h"
 
-#define NUM_ITERS 3
+#define NUM_ITERS   3
 #define MAX_THREADS 24
+
+#define C_NUM_ELEMS 500
 
 class BenchmarkLockFreeHT
 {
@@ -23,6 +26,7 @@ class BenchmarkLockFreeHT
                         int thread_count,
                         double load_factor);
 
+    void benchmark_correctness();
     void benchmark_all();
     void run();
 
@@ -48,6 +52,67 @@ BenchmarkLockFreeHT::BenchmarkLockFreeHT(int op_count, int capacity,
 
   m_rweight      = rweight;
   m_idweight     = idweight;
+}
+
+void BenchmarkLockFreeHT::benchmark_correctness()
+{
+  bool correct = true;
+
+  Lockfree_hash_table ht(1000);
+  std::unordered_map<int, int> map;
+  map.reserve(1000);
+  
+  std::random_device                 rd;
+  std::mt19937                       mt(rd());
+  std::uniform_int_distribution<int> rng;
+
+  int elems[C_NUM_ELEMS];
+  for (int i = 0; i < C_NUM_ELEMS; i++)
+  {
+    int k = rng(mt);
+    elems[i] = k;
+    map[k] = k;
+  }
+  
+  pthread_t  workers[MAX_THREADS];
+  WorkerArgs args[MAX_THREADS];
+
+  for (int i = 0; i < 2; i++)
+  {
+    args[i].num_elems = C_NUM_ELEMS / 2;
+    args[i].ht_p      = (void*)&ht;
+    args[i].elems     = elems;
+    args[i].start     = i * (C_NUM_ELEMS / 2);
+
+    pthread_create(&workers[i], NULL, thread_insert<Lockfree_hash_table>, (void*)&args[i]);
+  }
+
+  for (int i = 0; i < 2; i++)
+  {
+    pthread_join(workers[i], NULL);
+  }
+
+
+  int count = 0;
+  for (std::pair<int, int> e : map)
+  {
+    std::pair<int, bool> r = ht.search(e.first);
+    if (!r.second || e.second != r.first)
+    {
+
+      std::cout << "\t" << "Expected value, Received value, Received result = " << e.second << " " << r.second << " "<< r.first << std::endl;
+      correct = false;
+      count++;
+    }
+  }
+
+  std::cout << "\t" << count << "/" << C_NUM_ELEMS << " errors" << std::endl;
+
+  if (correct)
+    std::cout << "\t" << "Correctness test passed" << std::endl;
+  else
+    std::cout << "\t" << "Correctness test failed" << std::endl;
+
 }
 
 void BenchmarkLockFreeHT::benchmark_all()
@@ -112,6 +177,7 @@ void BenchmarkLockFreeHT::benchmark_all()
 
 void BenchmarkLockFreeHT::run()
 {
+  benchmark_correctness();
   benchmark_all();
 }
 

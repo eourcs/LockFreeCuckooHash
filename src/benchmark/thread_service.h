@@ -12,6 +12,9 @@ struct WorkerArgs
   int    iweight;
   int    dweight; 
   void*  ht_p;
+
+  int    start;
+  int*   elems;
 };
 
 template<typename T>
@@ -49,6 +52,23 @@ void* thread_service(void* threadArgs)
     else
       ht_p->remove(k);
   }
+}
+
+template<typename T>
+void* thread_insert(void* threadArgs)
+{
+  WorkerArgs* args = static_cast<WorkerArgs*>(threadArgs);
+  int* elems = args->elems;
+  T*   ht_p  = static_cast<T*>(args->ht_p);
+  int  start     = args->start;
+  int  num_elems = args->num_elems;
+
+  for (int i = start; i < start + num_elems; i++)
+  {
+    ht_p->insert(elems[i], elems[i]);
+    std::pair<int, bool> r = ht_p->search(elems[i]);
+  }
+  
 }
 
 #endif
