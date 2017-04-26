@@ -112,6 +112,7 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &e1, Count_ptr &e2) {
 
 bool Lockfree_hash_table::relocate(int which, int index) {
   int  route[THRESHOLD];
+  Count_ptr pptr;
   int  pre_idx;
   int  start_level = 0;
   int  tbl = which;
@@ -131,10 +132,19 @@ path_discovery:
       e1 = get_pointer(table[tbl][idx]);
     }
 
+    if (pptr == ptr1 && get_pointer(pptr)->key == get_pointer(ptr1)->key)
+    {
+      if (tbl == 0)
+        del_dup(idx, ptr1, pre_idx, pptr);
+      else
+        del_dup(pre_idx, pptr, idx, ptr1);
+    }
+
     if (e1 != nullptr)
     {
       route[depth] = idx;
       int key = e1->key;
+      pptr    = ptr1; 
       pre_idx = idx;
       tbl     = 1 - tbl;
       idx     = (tbl == 0) ? hash1(key) : hash2(key); 
