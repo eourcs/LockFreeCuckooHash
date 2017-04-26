@@ -6,6 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <pthread.h>
+#include <array>
 
 #include "../common/cycle_timer.h"
 #include "../lockfree_hash_table.h"

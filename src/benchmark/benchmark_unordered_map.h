@@ -5,6 +5,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <array>
 
 #include "../common/cycle_timer.h"
 

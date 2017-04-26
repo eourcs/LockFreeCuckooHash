@@ -28,8 +28,8 @@ Lockfree_hash_table::Lockfree_hash_table(int capacity) {
   size1 = capacity / 2;
   size2 = capacity - size1;
 
-  table[0] = new Count_ptr[size1];
-  table[1] = new Count_ptr[size2];
+  table[0] = new Count_ptr[size1]();
+  table[1] = new Count_ptr[size2]();
 }
 
 void rehash() {
