@@ -291,6 +291,8 @@ void Lockfree_hash_table::insert(int key, int val) {
   Count_ptr e1, e2;
 
   Hash_entry *new_node = new Hash_entry();
+  new_node->key = key;
+  new_node->val = val;
 
   int h1 = hash1(key);
   int h2 = hash2(key);
