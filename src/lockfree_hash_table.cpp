@@ -8,7 +8,7 @@ inline Count_ptr make_pointer(Hash_entry* e, uint16_t count) {
   return (Count_ptr)((((uint64_t)count) << 48) | ((uint64_t)e & 0xFFFFFFFFFFFF));
 }
 inline Hash_entry* get_pointer(Count_ptr ptr) {
-  return (Hash_entry*)((uint64_t)ptr & 0xFFFFFFFFFFFF);
+  return (Hash_entry*)((uint64_t)ptr & 0xFFFFFFFFFFFE);
 }
 
 inline uint16_t get_counter(Count_ptr ptr) { 
@@ -206,7 +206,7 @@ path_discovery:
 void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
   while (1)
   {
-    Count_ptr ptr1  = table[which][index];
+    volatile Count_ptr ptr1  = table[which][index];
     Hash_entry* src = get_pointer(ptr1);
     while (initiator && !get_marked(src))
     {
@@ -215,6 +215,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
 
       __sync_bool_compare_and_swap(&table[which][index], ptr1, 
                                    set_marked(ptr1, 1));
+      //table[which][index] = set_marked(ptr1, 1);
       ptr1 = table[which][index];
       src  = get_pointer(ptr1);
     }
