@@ -1,5 +1,6 @@
 #include "lockfree_hash_table.h"
 #include <cstdint>
+#include <iostream>
 
 #define THRESHOLD 50
 
@@ -126,6 +127,8 @@ bool Lockfree_hash_table::relocate(int which, int index) {
   int  tbl = which;
   int  idx = index;
 
+  //std::cout << "Relocating " << index << std::endl;
+
 path_discovery:
   bool found = false;
   int depth = start_level;
@@ -208,7 +211,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
   {
     volatile Count_ptr ptr1  = table[which][index];
     Hash_entry* src = get_pointer(ptr1);
-    while (initiator && !get_marked(src))
+    while (!get_marked(ptr1))
     {
       if (src == nullptr)
         return;
@@ -220,7 +223,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
       src  = get_pointer(ptr1);
     }
 
-    if (!get_marked(src))
+    if (!get_marked(ptr1))
       return;
 
     int hd = ((1 - which) == 0) ? hash1(src->key) : hash2(src->key);
@@ -242,18 +245,18 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
                                      make_pointer(nullptr, ts1+1));
         return;
       }
+    }
 
-      if (src == dst)
-      {
-        __sync_bool_compare_and_swap(&table[which][index], ptr1, 
-                                     make_pointer(nullptr, ts1+1));
-        return;
-      }
-
+    if (src == dst)
+    {
       __sync_bool_compare_and_swap(&table[which][index], ptr1, 
-                                   make_pointer(set_marked(src, 0), ts1+1));
+                                   make_pointer(nullptr, ts1+1));
       return;
     }
+
+    __sync_bool_compare_and_swap(&table[which][index], ptr1, 
+                                 make_pointer(set_marked(src, 0), ts1+1));
+    return;
     
   }
 }
@@ -309,6 +312,8 @@ void Lockfree_hash_table::insert(int key, int val) {
 
   int h1 = hash1(key);
   int h2 = hash2(key);
+
+  //std::cout << "Inserting " << key << std::endl;
 
   while (true) {
     Find_result result = find(key, ptr1, ptr2);
