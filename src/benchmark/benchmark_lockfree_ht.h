@@ -77,7 +77,6 @@ void BenchmarkLockFreeHT::benchmark_correctness()
   pthread_t  workers[MAX_THREADS];
   WorkerArgs args[MAX_THREADS];
 
-  /*
   for (int i = 0; i < 2; i++)
   {
     args[i].num_elems = C_NUM_ELEMS / 2;
@@ -92,15 +91,14 @@ void BenchmarkLockFreeHT::benchmark_correctness()
   {
     pthread_join(workers[i], NULL);
   }
-  */
-
+/*
   args[0].num_elems = C_NUM_ELEMS;
   args[0].ht_p = (void*)&ht;
   args[0].elems = elems;
   args[0].start = 0;
     pthread_create(&workers[0], NULL, thread_insert<Lockfree_hash_table>, (void*)&args[0]);
     pthread_join(workers[0], NULL);
-
+*/
 
   int count = 0;
   for (std::pair<int, int> e : map)
