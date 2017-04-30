@@ -215,7 +215,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
     //std::cout << "help_relocate inf loop" << std::endl;
     Count_ptr ptr1  = table[which][index];
     Hash_entry* src = get_pointer(ptr1);
-    while (!get_marked(ptr1))
+    while (initiator && !get_marked(ptr1))
     {
       //std::cout << "help_relocate mark inf loop" << std::endl;
       if (src == nullptr)
@@ -376,6 +376,7 @@ void Lockfree_hash_table::remove(int key) {
     if (ret == FIRST) {
       if (__sync_bool_compare_and_swap(
             &table[0][h1], e1, make_pointer(nullptr, get_counter(e1)))) {
+        //delete e1;
         return;
       }
     } else if (ret == SECOND) {
@@ -383,6 +384,7 @@ void Lockfree_hash_table::remove(int key) {
         continue;
       if (__sync_bool_compare_and_swap(
             &table[1][h2], e2, make_pointer(nullptr, get_counter(e2)))) {
+        //delete e2;
         return;
       }
     }
