@@ -2,7 +2,6 @@
 #define LOCKFREE_HASH_TABLE
 
 #include <vector>
-#include "hash_table.h"
 
 struct Hash_entry {
   int key;
