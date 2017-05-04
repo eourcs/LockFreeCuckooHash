@@ -1,11 +1,8 @@
 #include "lockfree_hash_table.h"
 #include <cstdint>
-#include <cstring>
 #include <iostream>
 
-#define THRESHOLD       100
-#define RNODE_THRESHOLD 100
-#define HP_COUNT        2
+#define THRESHOLD 50
 
 // Inline bit twiddling functions
 inline Count_ptr make_pointer(Hash_entry* e, uint16_t count) {
@@ -28,33 +25,20 @@ inline Hash_entry *set_marked(Hash_entry *ent, bool marked) {
                 : (Hash_entry*)((uint64_t)ent & (~1));
 }
 
-Lockfree_hash_table::Lockfree_hash_table(int capacity, int thread_count) {
+Lockfree_hash_table::Lockfree_hash_table(int capacity) {
   size1 = capacity / 2;
   size2 = capacity - size1;
 
-  // Allocate tables
   table[0] = new Count_ptr[size1]();
   table[1] = new Count_ptr[size2]();
 
-  std::memset(table[0], 0, sizeof(Count_ptr) * size1);
-  std::memset(table[1], 0, sizeof(Count_ptr) * size2);
-
-  // Allocate data structures for hazard pointers
-  rlist.reserve(thread_count);
-  rcount.reserve(thread_count);
-  hp_record.reserve(thread_count);
-
-  for (int i = 0; i < thread_count; i++)
-  {
-    rlist[i].reserve(HP_COUNT);
-    hp_record[i].reserve(HP_COUNT);
+  for (int i = 0; i < size1; i++) {
+    table[0][i] = 0;
   }
 
-}
-
-Lockfree_hash_table::~Lockfree_hash_table() {
-  delete table[0];
-  delete table[1];
+  for (int i = 0; i < size2; i++) {
+    table[1][i] = 0;
+  }
 }
 
 void rehash() {
@@ -82,20 +66,20 @@ bool Lockfree_hash_table::check_counter(int ts1, int ts2, int ts1x, int ts2x) {
   return (ts1x >= ts1 + 2) && (ts2x >= ts2 + 2) && (ts2x >= ts1 + 3);
 }
 
-Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2, int tid) {
+Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2) {
   int h1 = hash1(key);
   int h2 = hash2(key);
 
   Find_result result = (Find_result)-1;
 
   while (true) {
-    
+    //std::cout << "Find inf loop" << std::endl;
     ptr1 = table[0][h1];
     int ts1 = get_counter(ptr1);
 
     if (get_pointer(ptr1)) {
       if (get_marked(ptr1)) {
-        help_relocate(0, h1, false, tid);
+        help_relocate(0, h1, false);
         continue; 
       }
 
@@ -108,13 +92,13 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2,
 
     if (get_pointer(ptr2)) {
       if (get_marked(ptr2)) {
-        help_relocate(1, h2, false, tid);
+        help_relocate(1, h2, false);
         continue; 
       }
 
       if (get_pointer(ptr2)->key == key) {
         if (result == FIRST) {
-          del_dup(h1, ptr1, h2, ptr2, tid);
+          del_dup(h1, ptr1, h2, ptr2);
         } else {
           result = SECOND;
         }
@@ -136,7 +120,7 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2,
   }
 }
 
-bool Lockfree_hash_table::relocate(int which, int index, int tid) {
+bool Lockfree_hash_table::relocate(int which, int index) {
   int  route[THRESHOLD];
   Count_ptr pptr;
   int  pre_idx;
@@ -144,8 +128,10 @@ bool Lockfree_hash_table::relocate(int which, int index, int tid) {
   int  tbl = which;
   int  idx = index;
 
+  ////std::cout << "Relocating " << index << std::endl;
 
 path_discovery:
+  //std::cout << "Relocate inf loop" << std::endl;
   bool found = false;
   int depth = start_level;
   do
@@ -154,7 +140,8 @@ path_discovery:
 
     while (get_marked(ptr1))
     {
-      help_relocate(tbl, idx, false, tid);
+      //std::cout << "Relocate mark inf loop" << std::endl;
+      help_relocate(tbl, idx, false);
       ptr1 = table[tbl][idx];
     }
     
@@ -196,7 +183,7 @@ path_discovery:
 
       if (get_marked(ptr1))
       {
-        help_relocate(tbl, idx, false, tid);
+        help_relocate(tbl, idx, false);
         ptr1 = table[tbl][idx];
       }
 
@@ -215,20 +202,22 @@ path_discovery:
         tbl = 1 - tbl;
         goto path_discovery;
       }
-      help_relocate(tbl, idx, true, tid);
+      help_relocate(tbl, idx, true);
     }
   }
 
   return found;
 }
 
-void Lockfree_hash_table::help_relocate(int which, int index, bool initiator, int tid) {
+void Lockfree_hash_table::help_relocate(int which, int index, bool initiator) {
   while (1)
   {
+    //std::cout << "help_relocate inf loop" << std::endl;
     Count_ptr ptr1  = table[which][index];
     Hash_entry* src = get_pointer(ptr1);
     while (initiator && !get_marked(ptr1))
     {
+      //std::cout << "help_relocate mark inf loop" << std::endl;
       if (src == nullptr)
         return;
 
@@ -278,7 +267,7 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator, in
   }
 }
 
-void Lockfree_hash_table::del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr ptr2, int tid) {
+void Lockfree_hash_table::del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr ptr2) {
   if (ptr1 != table[0][idx1] && ptr2 != table[1][idx2])
     return;
   if (get_pointer(ptr1)->key != get_pointer(ptr2)->key)
@@ -289,11 +278,12 @@ void Lockfree_hash_table::del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr 
 }
   
 // Public
-std::pair<int, bool> Lockfree_hash_table::search(int key, int tid) {
+std::pair<int, bool> Lockfree_hash_table::search(int key) {
   int h1 = hash1(key);
   int h2 = hash2(key);
 
   while (true) {
+    //std::cout << "search inf loop " << key << std::endl;
     Count_ptr ptr1 = table[0][h1];
     Hash_entry *e1 = get_pointer(ptr1);
     int ts1 = get_counter(ptr1);
@@ -320,7 +310,7 @@ std::pair<int, bool> Lockfree_hash_table::search(int key, int tid) {
   return std::make_pair(0, false);
 }
 
-void Lockfree_hash_table::insert(int key, int val, int tid) {
+void Lockfree_hash_table::insert(int key, int val) {
   Count_ptr ptr1, ptr2;
 
   Hash_entry *new_node = new Hash_entry();
@@ -332,7 +322,8 @@ void Lockfree_hash_table::insert(int key, int val, int tid) {
 
 
   while (true) {
-    Find_result result = find(key, ptr1, ptr2, tid);
+    //std::cout << "Inserting " << key << std::endl;
+    Find_result result = find(key, ptr1, ptr2);
 
     if (result == FIRST) {
       get_pointer(ptr1)->val = val; 
@@ -360,7 +351,7 @@ void Lockfree_hash_table::insert(int key, int val, int tid) {
       return;
     }
 
-    if (relocate(0, h1, tid)) {
+    if (relocate(0, h1)) {
       continue;
     } else {
       rehash();
@@ -369,7 +360,7 @@ void Lockfree_hash_table::insert(int key, int val, int tid) {
   }
 }
 
-void Lockfree_hash_table::remove(int key, int tid) {
+void Lockfree_hash_table::remove(int key) {
   int h1 = hash1(key);
   int h2 = hash2(key);
 
@@ -377,7 +368,8 @@ void Lockfree_hash_table::remove(int key, int tid) {
   Count_ptr e2;
 
   while (true) {
-    Find_result ret = find(key, e1, e2, tid);
+    //std::cout << "remove inf loop" << std::endl;
+    Find_result ret = find(key, e1, e2);
 
     if (ret == NIL) return;
 

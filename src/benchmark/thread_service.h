@@ -13,7 +13,6 @@ struct WorkerArgs
   int    dweight; 
   void*  ht_p;
 
-  int    tid;
   int    start;
   int*   elems;
 };
@@ -36,7 +35,6 @@ void* thread_service(void* threadArgs)
   std::discrete_distribution<int>    drng(weights.begin(), weights.end());
 
   int num_elems = args->num_elems;
-  int tid = args->tid;
   T* ht_p = static_cast<T*>(args->ht_p);
 
   for (int i = 0; i < num_elems; i++)
@@ -48,11 +46,11 @@ void* thread_service(void* threadArgs)
     int a = drng(g);
 
     if (a == 0)
-      ht_p->search(k, tid);
+      ht_p->search(k);
     else if (a == 1)
-      ht_p->insert(k, v, tid);
+      ht_p->insert(k, v);
     else
-      ht_p->remove(k, tid);
+      ht_p->remove(k);
   }
 }
 
@@ -64,11 +62,11 @@ void* thread_insert(void* threadArgs)
   T*   ht_p  = static_cast<T*>(args->ht_p);
   int  start     = args->start;
   int  num_elems = args->num_elems;
-  int  tid       = args->tid;
 
   for (int i = start; i < start + num_elems; i++)
   {
-    ht_p->insert(elems[i], elems[i], tid);
+    ht_p->insert(elems[i], elems[i]);
+    std::pair<int, bool> r = ht_p->search(elems[i]);
   }
   
 }

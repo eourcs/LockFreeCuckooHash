@@ -57,11 +57,10 @@ BenchmarkLockFreeHT::BenchmarkLockFreeHT(int op_count, int capacity,
 void BenchmarkLockFreeHT::benchmark_correctness()
 {
   bool correct = true;
-  int  thread_count = 2;
 
-  Lockfree_hash_table ht(2 * C_NUM_ELEMS, thread_count);
+  Lockfree_hash_table ht(1000);
   std::unordered_map<int, int> map;
-  map.reserve(2 * C_NUM_ELEMS);
+  map.reserve(1000);
   
   std::random_device                 rd;
   std::mt19937                       mt(rd());
@@ -78,26 +77,33 @@ void BenchmarkLockFreeHT::benchmark_correctness()
   pthread_t  workers[MAX_THREADS];
   WorkerArgs args[MAX_THREADS];
 
-  for (int i = 0; i < thread_count; i++)
+  for (int i = 0; i < 2; i++)
   {
-    args[i].num_elems = C_NUM_ELEMS / thread_count;
+    args[i].num_elems = C_NUM_ELEMS / 2;
     args[i].ht_p      = (void*)&ht;
     args[i].elems     = elems;
-    args[i].start     = i * (C_NUM_ELEMS / thread_count);
-    args[i].tid       = i;
+    args[i].start     = i * (C_NUM_ELEMS / 2);
 
     pthread_create(&workers[i], NULL, thread_insert<Lockfree_hash_table>, (void*)&args[i]);
   }
 
-  for (int i = 0; i < thread_count; i++)
+  for (int i = 0; i < 2; i++)
   {
     pthread_join(workers[i], NULL);
   }
+/*
+  args[0].num_elems = C_NUM_ELEMS;
+  args[0].ht_p = (void*)&ht;
+  args[0].elems = elems;
+  args[0].start = 0;
+    pthread_create(&workers[0], NULL, thread_insert<Lockfree_hash_table>, (void*)&args[0]);
+    pthread_join(workers[0], NULL);
+*/
 
   int count = 0;
   for (std::pair<int, int> e : map)
   {
-    std::pair<int, bool> r = ht.search(e.first, 0);
+    std::pair<int, bool> r = ht.search(e.first);
     if (!r.second || e.second != r.first)
     {
 
@@ -118,7 +124,7 @@ void BenchmarkLockFreeHT::benchmark_correctness()
 
 void BenchmarkLockFreeHT::benchmark_all()
 {
-    Lockfree_hash_table ht(m_capacity, m_thread_count);
+    Lockfree_hash_table ht(m_capacity);
 
     std::random_device                 rd;
     std::mt19937                       mt(rd());
@@ -139,7 +145,7 @@ void BenchmarkLockFreeHT::benchmark_all()
       int k = rng(mt); 
       int v = rng(mt);
 
-      ht.insert(k, v, 0);
+      ht.insert(k, v);
     }
 
     // Run benchmark
@@ -158,7 +164,6 @@ void BenchmarkLockFreeHT::benchmark_all()
         args[i].iweight   = m_idweight;
         args[i].dweight   = m_idweight;
         args[i].ht_p      = (void*)&ht;
-        args[i].tid       = i;
         pthread_create(&workers[i], NULL, thread_service<Lockfree_hash_table>, (void*)&args[i]);
       }
 
