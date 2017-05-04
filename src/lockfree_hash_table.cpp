@@ -1,8 +1,12 @@
 #include "lockfree_hash_table.h"
 #include <cstdint>
 #include <iostream>
+#include <algorithm>
 
-#define THRESHOLD 50
+#define THRESHOLD   50
+#define R           50
+#define MAX_BUFSIZE 128
+#define HP_COUNT    2
 
 // Inline bit twiddling functions
 inline Count_ptr make_pointer(Hash_entry* e, uint16_t count) {
@@ -32,6 +36,16 @@ Lockfree_hash_table::Lockfree_hash_table(int capacity, int thread_count) {
   table[0] = new Count_ptr[size1]();
   table[1] = new Count_ptr[size2]();
 
+  hp_rec.reserve(thread_count);
+  rlist.reserve(thread_count);
+  rcount.reserve(thread_count);
+
+  for (int i = 0; i < thread_count; i++)
+  {
+    hp_rec[0][0] = NULL;
+    hp_rec[0][1] = NULL;
+  }
+
 }
 
 Lockfree_hash_table::~Lockfree_hash_table() {
@@ -41,6 +55,45 @@ Lockfree_hash_table::~Lockfree_hash_table() {
 
 void rehash() {
   return;
+}
+// HP functions
+void Lockfree_hash_table::retire_node(Hash_entry* node, int tid) {
+  rlist[tid].push_back(node);
+  rcount[tid]++;
+
+  if (rcount[tid] > R)
+    scan(tid);
+}
+
+void Lockfree_hash_table::scan(int tid) {
+  // Stage 1
+  std::vector<Hash_entry*> plist;
+  plist.reserve(MAX_BUFSIZE);
+  for (int i = 0; i < hp_rec.size(); i++)
+  {
+    for (int j = 0; j < hp_rec[i].size(); j++)
+    {
+      Hash_entry* hptr = hp_rec[i][j];
+      if (hptr != NULL)
+        plist.push_back(hptr);
+    }
+  }
+
+  // Stage 2
+  int n = rcount[tid];
+  rcount[tid] = 0;
+  for (int i = 0; i < n; i++)
+  {
+    if (std::find(plist.begin(), plist.end(), rlist[tid][i]) != plist.end())
+    {
+      rlist[tid][rcount[tid]] = rlist[tid][i];
+      rcount[tid]++;
+    }
+    else
+    {
+      delete rlist[tid][i];
+    }
+  }
 }
 
 // Private

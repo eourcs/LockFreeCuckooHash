@@ -2,6 +2,8 @@
 #define LOCKFREE_HASH_TABLE
 
 #include "hash_table.h"
+#include <vector>
+#include <array>
 
 struct Hash_entry {
   int key;
@@ -26,6 +28,10 @@ private:
   int size1;
   int size2;
 
+  std::vector<std::vector<Hash_entry*>>   rlist;
+  std::vector<int>                        rcount;
+  std::vector<std::array<Hash_entry*, 2>> hp_rec;
+
   int hash1(int key);
   int hash2(int key);
   bool check_counter(int ts1, int ts2, int ts1x, int ts2x);
@@ -33,5 +39,8 @@ private:
   bool relocate(int which, int index, int tid);
   void help_relocate(int which, int index, bool initiator, int tid);
   void del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr ptr2, int tid);
+
+  void retire_node(Hash_entry* node, int tid);
+  void scan(int tid);
 };
 #endif
