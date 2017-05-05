@@ -50,6 +50,21 @@ Lockfree_hash_table::Lockfree_hash_table(int capacity, int thread_count) {
 }
 
 Lockfree_hash_table::~Lockfree_hash_table() {
+
+  for (int i = 0; i < size1; i++)
+  {
+    Hash_entry* node = get_pointer(table[0][i]);
+    if (node != NULL)
+      delete node;
+  }
+  
+  for (int i = 0; i < size2; i++)
+  {
+    Hash_entry* node = get_pointer(table[1][i]);
+    if (node != NULL)
+      delete node;
+  }
+  
   delete table[0];
   delete table[1];
 }
