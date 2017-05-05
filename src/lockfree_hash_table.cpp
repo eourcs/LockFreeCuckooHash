@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #define THRESHOLD   50
-#define R           50
+#define R           25
 #define MAX_BUFSIZE 128
 #define HP_COUNT    2
 
@@ -42,8 +42,9 @@ Lockfree_hash_table::Lockfree_hash_table(int capacity, int thread_count) {
 
   for (int i = 0; i < thread_count; i++)
   {
-    hp_rec[0][0] = NULL;
-    hp_rec[0][1] = NULL;
+    hp_rec[i][0] = NULL;
+    hp_rec[i][1] = NULL;
+    rcount[i]    = 0;
   }
 
 }
@@ -58,7 +59,7 @@ void rehash() {
 }
 // HP functions
 void Lockfree_hash_table::retire_node(Hash_entry* node, int tid) {
-  rlist[tid].push_back(node);
+  rlist[tid][rcount[tid]] = node;
   rcount[tid]++;
 
   if (rcount[tid] > R)
@@ -67,15 +68,17 @@ void Lockfree_hash_table::retire_node(Hash_entry* node, int tid) {
 
 void Lockfree_hash_table::scan(int tid) {
   // Stage 1
+  int size = 0;
   std::vector<Hash_entry*> plist;
-  plist.reserve(MAX_BUFSIZE);
   for (int i = 0; i < hp_rec.size(); i++)
   {
     for (int j = 0; j < hp_rec[i].size(); j++)
     {
       Hash_entry* hptr = hp_rec[i][j];
       if (hptr != NULL)
+      {
         plist.push_back(hptr);
+      }
     }
   }
 
@@ -91,6 +94,7 @@ void Lockfree_hash_table::scan(int tid) {
     }
     else
     {
+      //printf("freed %p\n", rlist[tid][i]);
       delete rlist[tid][i];
     }
   }
@@ -128,6 +132,10 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2,
     //std::cout << "Find inf loop" << std::endl;
     ptr1 = table[0][h1];
     int ts1 = get_counter(ptr1);
+    
+    hp_rec[tid][0] = get_pointer(ptr1);
+    if (get_pointer(ptr1) != get_pointer(table[0][h1]))
+      continue;
 
     if (get_pointer(ptr1)) {
       if (get_marked(ptr1)) {
@@ -141,6 +149,10 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2,
 
     ptr2 = table[1][h2];
     int ts2 = get_counter(ptr2);
+
+    hp_rec[tid][1] = get_pointer(ptr2);
+    if (get_pointer(ptr2) != get_pointer(table[1][h2]))
+      continue;
 
     if (get_pointer(ptr2)) {
       if (get_marked(ptr2)) {
@@ -173,6 +185,7 @@ Find_result Lockfree_hash_table::find(int key, Count_ptr &ptr1, Count_ptr &ptr2,
 }
 
 bool Lockfree_hash_table::relocate(int which, int index, int tid) {
+try_again:
   int  route[THRESHOLD];
   Count_ptr pptr   = NULL;
   int  pre_idx     = 0;
@@ -180,38 +193,39 @@ bool Lockfree_hash_table::relocate(int which, int index, int tid) {
   int  tbl         = which;
   int  idx         = index;
 
-  ////std::cout << "Relocating " << index << std::endl;
 
 path_discovery:
-  //std::cout << "Relocate inf loop" << std::endl;
   bool found = false;
   int depth = start_level;
   do
   {
     Count_ptr ptr1 = table[tbl][idx];
-
+    
     while (get_marked(ptr1))
     {
-      //std::cout << "Relocate mark inf loop" << std::endl;
       help_relocate(tbl, idx, false, tid);
       ptr1 = table[tbl][idx];
     }
-    
-    Hash_entry* e1 = get_pointer(ptr1);
-    
-    if (get_pointer(pptr) && get_pointer(ptr1) && 
-        get_pointer(pptr)->key == get_pointer(ptr1)->key)
 
+    Hash_entry* e1 = get_pointer(ptr1);
+    Hash_entry* p1 = get_pointer(pptr);
+    hp_rec[tid][0] = e1;
+    if (e1 != get_pointer(table[tbl][idx]))
+      goto try_again;
+    /*
+    if (p1 && e1 && e1->key == p1->key)
     {
       if (tbl == 0)
         del_dup(idx, ptr1, pre_idx, pptr, tid);
       else
         del_dup(pre_idx, pptr, idx, ptr1, tid);
     }
+    */
+    
     if (e1 != nullptr)
     {
       route[depth] = idx;
-      int key = e1->key;
+      int key = e1->key; 
       pptr    = ptr1;
       pre_idx = idx;
       tbl     = 1 - tbl;
@@ -230,11 +244,20 @@ path_discovery:
     {
       idx = route[i];
       Count_ptr ptr1 = table[tbl][idx];
-
+      /*
+      hp_rec[tid][0] = get_pointer(ptr1);
+      if (get_pointer(ptr1) != get_pointer(table[tbl][idx]))
+        goto try_again;
+      */
       if (get_marked(ptr1))
       {
         help_relocate(tbl, idx, false, tid);
-        ptr1 = table[tbl][idx];
+        hp_rec[tid][0] = table[tbl][idx];
+        ptr1 = hp_rec[tid][0];
+        /*
+        if (get_pointer(ptr1) != get_pointer(table[tbl][idx]))
+          goto try_again;
+         */
       }
 
       Hash_entry* e1 = get_pointer(ptr1);
@@ -263,8 +286,12 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator, in
   while (1)
   {
     //std::cout << "help_relocate inf loop" << std::endl;
-    Count_ptr ptr1  = table[which][index];
+    Count_ptr ptr1 = table[which][index];
     Hash_entry* src = get_pointer(ptr1);
+    hp_rec[tid][0] = src;
+    if (ptr1 != table[which][index])
+      continue;
+
     while (initiator && !get_marked(ptr1))
     {
       //std::cout << "help_relocate mark inf loop" << std::endl;
@@ -274,6 +301,9 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator, in
       __sync_bool_compare_and_swap(&table[which][index], ptr1, 
                                    set_marked(ptr1, 1));
       ptr1 = table[which][index];
+      hp_rec[tid][0] = ptr1;
+      if (ptr1 != table[which][index])
+        continue;
       src  = get_pointer(ptr1);
     }
 
@@ -281,8 +311,11 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator, in
       return;
 
     int hd = ((1 - which) == 0) ? hash1(src->key) : hash2(src->key);
-    Count_ptr ptr2  = table[1-which][hd];
+    Count_ptr ptr2 = table[1-which][hd];
     Hash_entry* dst = get_pointer(ptr2);
+    hp_rec[tid][1] = dst;
+    if (ptr2 != table[1-which][hd])
+      continue;
 
     uint16_t ts1 = get_counter(ptr1);
     uint16_t ts2 = get_counter(ptr2);
@@ -318,6 +351,8 @@ void Lockfree_hash_table::help_relocate(int which, int index, bool initiator, in
 }
 
 void Lockfree_hash_table::del_dup(int idx1, Count_ptr ptr1, int idx2, Count_ptr ptr2, int tid) {
+  hp_rec[tid][0] = ptr1;
+  hp_rec[tid][1] = ptr2;
   if (ptr1 != table[0][idx1] && ptr2 != table[1][idx2])
     return;
   if (get_pointer(ptr1)->key != get_pointer(ptr2)->key)
@@ -334,8 +369,13 @@ std::pair<int, bool> Lockfree_hash_table::search(int key, int tid) {
 
   while (true) {
     //std::cout << "search inf loop " << key << std::endl;
-    Count_ptr ptr1 = table[0][h1];
+    Count_ptr ptr1 = table[0][h1]; 
     Hash_entry *e1 = get_pointer(ptr1);
+    
+    hp_rec[tid][0] = e1;
+    if (ptr1 != table[0][h1])
+      continue;
+
     int ts1 = get_counter(ptr1);
 
     if (e1 && e1->key == key)
@@ -343,6 +383,11 @@ std::pair<int, bool> Lockfree_hash_table::search(int key, int tid) {
 
     Count_ptr ptr2 = table[1][h2];
     Hash_entry *e2 = get_pointer(ptr2);
+
+    hp_rec[tid][0] = e2;
+    if (ptr2 != table[1][h2])
+      continue;
+
     int ts2 = get_counter(ptr2);
 
     if (e2 && e2->key == key)
@@ -426,7 +471,7 @@ void Lockfree_hash_table::remove(int key, int tid) {
     if (ret == FIRST) {
       if (__sync_bool_compare_and_swap(
             &table[0][h1], e1, make_pointer(nullptr, get_counter(e1)))) {
-        //delete e1;
+        retire_node(get_pointer(e1), tid);
         return;
       }
     } else if (ret == SECOND) {
@@ -434,7 +479,7 @@ void Lockfree_hash_table::remove(int key, int tid) {
         continue;
       if (__sync_bool_compare_and_swap(
             &table[1][h2], e2, make_pointer(nullptr, get_counter(e2)))) {
-        //delete e2;
+        retire_node(get_pointer(e2), tid);
         return;
       }
     }

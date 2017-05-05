@@ -1,6 +1,8 @@
 #ifndef LOCKFREE_HASH_TABLE
 #define LOCKFREE_HASH_TABLE
 
+#define MAX_BUF 256
+
 #include "hash_table.h"
 #include <vector>
 #include <array>
@@ -28,9 +30,9 @@ private:
   int size1;
   int size2;
 
-  std::vector<std::vector<Hash_entry*>>   rlist;
-  std::vector<int>                        rcount;
-  std::vector<std::array<Hash_entry*, 2>> hp_rec;
+  std::vector<std::array<Hash_entry*, MAX_BUF>>   rlist;
+  std::vector<int>                                rcount;
+  std::vector<std::array<Hash_entry*, 2>>         hp_rec;
 
   int hash1(int key);
   int hash2(int key);
