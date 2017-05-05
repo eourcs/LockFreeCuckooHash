@@ -236,7 +236,6 @@ path_discovery:
         del_dup(pre_idx, pptr, idx, ptr1, tid);
     }
     */
-    
     if (e1 != nullptr)
     {
       route[depth] = idx;

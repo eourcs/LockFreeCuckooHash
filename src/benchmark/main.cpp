@@ -65,6 +65,8 @@ int main(int argc, char *argv[])
   int    idweight = 100 - read_percent;
   double lfactor  = load_factor / 100.0;
 
+  printf("%d", num_threads);
+
   // Run tests
   std::cout << "*** STARTING Benchmark ***" << std::endl;
   std::cout << "Parameters: " << std::endl;

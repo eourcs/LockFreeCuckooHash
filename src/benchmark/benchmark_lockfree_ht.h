@@ -27,6 +27,7 @@ class BenchmarkLockFreeHT
                         double load_factor);
 
     void benchmark_correctness();
+    void benchmark_hp();
     void benchmark_all();
     void run();
 
@@ -115,6 +116,56 @@ void BenchmarkLockFreeHT::benchmark_correctness()
 
 }
 
+void BenchmarkLockFreeHT::benchmark_hp()
+{
+  Lockfree_hash_table ht(400000, m_thread_count);
+
+  std::random_device                 rd;
+  std::mt19937                       mt(rd());
+  std::uniform_int_distribution<int> rng;
+
+  std::array<int, 3> weights;
+  weights[0] = m_rweight;
+  weights[1] = m_idweight;
+  weights[2] = m_idweight;
+
+  std::default_random_engine         g;
+  std::discrete_distribution<int>    drng(weights.begin(), weights.end());
+
+  int insert[200000];
+  for (int i = 0; i < 200000; i++)
+  {
+    int k = rng(mt);
+    int v = rng(mt);
+    insert[i] = k;
+    ht.insert(k, v, 0);
+  }
+  
+  pthread_t  workers[MAX_THREADS];
+  WorkerArgs args[MAX_THREADS];
+
+  int num_elems = 200000 / m_thread_count;
+  for (int i = 0; i < m_thread_count; i++)
+  {
+    args[i].num_elems = num_elems;
+    args[i].ht_p      = (void*)&ht;
+    args[i].elems     = insert;
+    args[i].start     = i * num_elems;
+    args[i].tid       = i;
+    args[i].remove    = i < (m_thread_count / 4);
+
+    pthread_create(&workers[i], NULL, thread_remove<Lockfree_hash_table>, (void*)&args[i]);
+  }
+  
+  for (int i = 0; i < m_thread_count; i++)
+  {
+    pthread_join(workers[i], NULL);
+  }
+   
+  std::cout << "\t" << "Hazard Pointer test passed" << std::endl;
+
+}
+
 void BenchmarkLockFreeHT::benchmark_all()
 {
     Lockfree_hash_table ht(m_capacity, m_thread_count);
@@ -154,9 +205,10 @@ void BenchmarkLockFreeHT::benchmark_all()
       {
         args[i].num_elems = num_elems;
         args[i].rweight   = m_rweight;
-        args[i].iweight   = m_idweight;
-        args[i].dweight   = m_idweight;
+        args[i].iweight   = m_idweight / 2;
+        args[i].dweight   = m_idweight / 2;
         args[i].ht_p      = (void*)&ht;
+        args[i].tid       = i;
         pthread_create(&workers[i], NULL, thread_service<Lockfree_hash_table>, (void*)&args[i]);
       }
 
@@ -178,6 +230,7 @@ void BenchmarkLockFreeHT::benchmark_all()
 void BenchmarkLockFreeHT::run()
 {
   benchmark_correctness();
+  benchmark_hp();
   benchmark_all();
 }
 

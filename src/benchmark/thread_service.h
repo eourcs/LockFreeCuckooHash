@@ -13,6 +13,7 @@ struct WorkerArgs
   int    dweight; 
   void*  ht_p;
 
+  bool   remove;
   int    tid;
   int    start;
   int*   elems;
@@ -71,6 +72,31 @@ void* thread_insert(void* threadArgs)
     ht_p->insert(elems[i], elems[i], tid);
   }
   
+}
+
+template<typename T>
+void* thread_remove(void* threadArgs)
+{
+  WorkerArgs* args = static_cast<WorkerArgs*>(threadArgs);
+  int* elems = args->elems;
+  T*   ht_p  = static_cast<T*>(args->ht_p);
+  int  start     = args->start;
+  int  num_elems = args->num_elems;
+  int  tid       = args->tid;
+  bool remove    = args->remove;
+  
+  std::random_device                 rd;
+  std::mt19937                       mt(rd());
+  std::uniform_int_distribution<int> rng(0, 200000 - 1);
+
+  for (int i = start; i < start + num_elems; i++)
+  {
+    if (remove)
+      ht_p->remove(elems[i], tid);
+    else
+      ht_p->search(elems[rng(mt)], tid);
+  }
+
 }
 
 #endif
