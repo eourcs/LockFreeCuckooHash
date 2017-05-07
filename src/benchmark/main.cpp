@@ -1,5 +1,6 @@
 #include "benchmark_unordered_map.h"
 #include "benchmark_lockfree_ht.h"
+#include "benchmark_libcuckoo.h"
 
 #include "thread_service.h"
 #include "../common/cycle_timer.h"
@@ -12,7 +13,7 @@
 #include <unistd.h>
 
 #define DEFAULT_OP_COUNT     2000000
-#define DEFAULT_THREAD_COUNT 24
+#define DEFAULT_THREAD_COUNT 12
 #define DEFAULT_READ_PERCENT 90
 #define DEFAULT_LOAD_FACTOR  40
 #define CAPACITY             8000016
@@ -80,5 +81,8 @@ int main(int argc, char *argv[])
 
   BenchmarkLockFreeHT benchmark_lockfree_ht(op_count, CAPACITY, rweight, idweight, num_threads, lfactor);
   benchmark_lockfree_ht.run();
+
+  BenchmarkLibCuckoo benchmark_libcuckoo(op_count, CAPACITY, rweight, idweight, num_threads, lfactor);
+  benchmark_libcuckoo.run();
 
 }
