@@ -79,6 +79,8 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 Much of this work is derived from _Nguyen and Tsigas, 2014_. The `uint32_t -> uint32_t` hash functions were written by Bob Jenkins and taken from [here](https://gist.github.com/badboy/6267743).
 
 ### Sources
-[1] http://www.craftychess.com/hyatt/hashing.html
-
-[2] http://www.tvandijk.nl/wp-content/uploads/2015/01/sylvan_tacas15.pdf
+* [1] [A Lockless transposition table implementation for parallel search](http://www.craftychess.com/hyatt/hashing.html)
+* [2] [Sylvan, "Multi-core Decision Diagrams"](http://www.tvandijk.nl/wp-content/uploads/2015/01/sylvan_tacas15.pdf)
+* [Li et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
+* [Shun, "Shared-Memory Parallelism Can Be Simple, Fast, and Scalable"](https://people.eecs.berkeley.edu/~jshun/thesis.pdf)
+* [Nguyen and Tsigas, "Lock-free Cuckoo Hashing"](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf)
