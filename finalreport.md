@@ -28,7 +28,17 @@ Lock-free data structures often perform better under scenarios of high contentio
 
 #### Data Structure
 
+```
+Count_ptr* table[2];
 
+struct Hash_entry {
+  int key;
+  int val;
+};
+
+// Use unused bits for relocation marking/counting
+typedef Hash_entry* Count_ptr;
+```
 
 
 #### Search
