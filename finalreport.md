@@ -56,7 +56,7 @@ Though the search procedure in sequential implementations only requires lookup o
 
 To address this, we employ a two-round querying method. The first round queries the two hash locations and records the relocation counters. The second round performs the same operations and compares the relocation counters with that of the previous round. If the procedure cannot the find the key and we know that at most one relocation has occured between rounds, then we are guaranteed that the key does not exist in the table. Otherwise, it is possible that the key was missed when querying, so we retry the search procedure.
 
-The implementations of remove and insert are conceptually similar. For the sake of brevity, we focus only on a special case of the insertion operation: relocate.
+The implementations of remove and insert are conceptually similar. For the sake of brevity, we focus only on a special case of insert: relocate.
 
 #### Relocate
 
