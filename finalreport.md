@@ -60,7 +60,9 @@ The implementations of remove and insert are conceptually similar. For the sake 
 
 #### Relocate
 
+When inserting a key, it is possible for both hash locations to be occupied. In this case, the original cuckoo hash implementation initiated a chain of relocations in which the new key is inserted into one of the tables, evicting a key. This "nestless key" is relocated to its alternate location, evicting another key. This procedure repeats until an empty slot is found (if such a slot cannot be found efficiently, the whole table is rehashed). However, this poses issues in concurrent environemnts. From the time it has been evicted to until it has evicted another key, the nestless key is absent from both tables and thus unreachable by other operations. To address this, we separate path discovery and path eviction. In the first step, we find an empty slot. In the second, we move the empty slot backwards along the cuckoo path by swapping with the previous key in the path. With this procedure, the "nestless key" is the empty slot being relocated, which of course does not impact correctness.
 
+The "swap" operation is implemented as a series of `__sync_bool_compare_and_swap` operations. 
 
 #### Hazard Pointers
 
