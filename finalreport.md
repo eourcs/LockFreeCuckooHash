@@ -18,6 +18,8 @@ Hash tables are prevalent data structure used to implement key-value pair store 
 
 #### Cuckoo Hashing
 
+![Cuckoo Path](https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Cuckoo%20Path.png)
+
 Cuckoo hashing is a hashing scheme that uses two different hash functions to encode keys, providing two possible hash locations for each key. Lookup involves simply inspecting the two possible hash locations, so it is worst-case O(1) (rather than expected). Insertions, if both hash locations are taken, involve a chain of relocations in which keys are pushed to their alternate hash locations to make space for the new key. With careful considerations to space utilization and hash functions, this procedure runs in expected O(1) time. The relocation procedure is particularly difficult to make lock-free as any alterations to the "cuckoo path" should be observed and carefully considered to determine if a retry of the operation is required.
 
 #### Lock-Freedom
@@ -27,6 +29,8 @@ Lock-free data structures often perform better under scenarios of high contentio
 ### Approach
 
 #### Data Structure
+
+![Data Structure](https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Data%20Structure.png)
 
 ```
 // Cuckoo hash table data structure
