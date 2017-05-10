@@ -29,6 +29,7 @@ Lock-free data structures often perform better under scenarios of high contentio
 #### Data Structure
 
 ```
+// Cuckoo hash table data structure
 Count_ptr* table[2];
 
 struct Hash_entry {
@@ -38,7 +39,14 @@ struct Hash_entry {
 
 // Use unused bits for relocation marking/counting
 typedef Hash_entry* Count_ptr;
+
+// Hazard pointers data structure
+std::vector<std::vector<Hash_entry*>>   retired_list;
+std::vector<int>                        retired_count;
+
+std::vector<std::array<Hash_entry*, 2>> hazard_pointer_record;  
 ```
+The general data structure is fairly similar to that of other cuckoo hash tables. We allocate two tables  
 
 
 #### Search
