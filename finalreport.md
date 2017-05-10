@@ -84,3 +84,5 @@ Much of this work is derived from _Nguyen and Tsigas, 2014_. The `uint32_t -> ui
 * [Li et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
 * [Shun, "Shared-Memory Parallelism Can Be Simple, Fast, and Scalable"](https://people.eecs.berkeley.edu/~jshun/thesis.pdf)
 * [Nguyen and Tsigas, "Lock-free Cuckoo Hashing"](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf)
+* [Pagh, "Cuckoo Hashing"](http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=1B77D5F578DD4F628C1E982F717CD98E?doi=10.1.1.25.4189&rep=rep1&type=pdf)
+* [Maier, Sanders, and Dementiev, "Concurrent Hash Tables: Fast and General(?)!"](https://arxiv.org/pdf/1601.04017.pdf)
