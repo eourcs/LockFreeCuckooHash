@@ -22,7 +22,9 @@ Cuckoo hashing is a hashing scheme that uses two different hash functions to enc
 
 #### Lock-Freedom
 
-### Our Approach
+
+
+### Approach
 
 #### Data Structure
 
