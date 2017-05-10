@@ -46,8 +46,9 @@ std::vector<int>                        retired_count;
 
 std::vector<std::array<Hash_entry*, 2>> hazard_pointer_record;  
 ```
-The general data structure is fairly similar to that of other cuckoo hash tables. We allocate two tables which contain `Count_ptr`s, which, though typedef'ed, differ from `Hash_entry*`. By the x86-64 convention, the upper 16 bits of an 8-byte pointer are not used in virtual addresses. In its place, we store a counter which keeps track of the number of relocations to address the ABA problem. Similarly, due to memory alignment requirements, the lowest significant bit in an address is always 0. In its place, we mark a bit to see if this entry is actively being relocated.
+The general data structure is fairly similar to that of other cuckoo hash tables. We allocate two tables which contain `Count_ptr`s, which, though typedef'ed, differ from `Hash_entry*`. By the x86-64 convention, the most significant 16 bits of an 8-byte pointer are not used in virtual addresses. In its place, we store a counter which keeps track of the number of relocations to address the ABA problem. Similarly, due to memory alignment requirements, the lowest significant bit in an address is always 0. In its place, we mark a bit to see if this entry is actively being relocated.
 
+To address memory reclamation, we also define the data structures necessary for the implementation of hazard pointers. They, in essence, are composed of a per-thread list of hash table entries that have been removed but not freed yet and and a per-thread array of potentially hazardous references.
 
 #### Search
 
