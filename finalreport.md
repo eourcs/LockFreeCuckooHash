@@ -76,7 +76,7 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 
 ### Acknowledgments
 
-Much of this work is derived from _Nguyen and Tsigas, 2014_.
+Much of this work is derived from _Nguyen and Tsigas, 2014_. The `uint32_t -> uint32_t` hash functions were written by Bob Jenkins and taken from [here](https://gist.github.com/badboy/6267743).
 
 ### Sources
 [1] http://www.craftychess.com/hyatt/hashing.html
