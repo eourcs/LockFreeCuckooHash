@@ -88,7 +88,7 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 
 #### Dynamic Resizing
 
-Most implementations today implement resizing by locking the whole table and copying all of the data to a new table. In practice, this is relatively efficient since resizing occurs infrequently. However, this makes the worst-case cost of an operation tremendously high. Shun [3] proposes a scheme in which a new table is allocated, but only a constant fraction of the data is copied at a time. With careful choice of constants, the number of active tables can be bounded by 2. This promises to be a much less disruptive resizing policy. Applying this same logic to the rehash operation may yield interesting results.
+Most implementations today implement resizing by locking the whole table and copying all of the data to a new table. In practice, this is relatively efficient since resizing occurs infrequently. However, this makes the worst-case cost of an operation tremendously high. Shun [3] proposes a scheme in which a new table is allocated, but only a constant fraction of the data is copied at a time. With careful choice of constants, the number of active tables can be bounded by two. This promises to be a much less disruptive resizing policy. Applying this same logic to the rehash operation may yield interesting results.
 
 ### Acknowledgments
 
