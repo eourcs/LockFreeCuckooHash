@@ -52,7 +52,7 @@ To address memory reclamation, we also define the data structures necessary for 
 
 #### Search
 
-Though the search procedure in sequential implementations only requires lookup of two hash locations, we must be careful when considering concurrent environments. For example, consider a key `x` stored at `hash2(x)`. It is possible for this key to be relocated to `hash1(x)` after we have queried that location but before we query `hash2(x)`. A naive procedure would fail to find such a "moving key", despite it existing in the table.
+Though the search procedure in sequential implementations only requires lookup of two hash locations, we must be careful when considering the operation in concurrent environments. For example, consider a key `x` stored at `hash2(x)`. It is possible for this key to be relocated to `hash1(x)` after we have queried that location but before we query `hash2(x)`. A naive procedure would fail to find such a "moving key", despite it existing in the table.
 
 To address this, we employ a two-round querying method. The first round queries the two hash locations and records the relocation counters. The second round performs the same operations and compares the relocation counters with that of the previous round. If the procedure cannot the find the key and we know that at most one relocation has occured between rounds, then we are guaranteed that the key does not exist in the table. Otherwise, it is possible that the key was missed when querying, so we retry the search procedure.
 
