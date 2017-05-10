@@ -14,7 +14,11 @@ We implemented a fully-concurrent cuckoo hash table. On the Latedays cluster con
 
 #### Hash Tables
 
+Hash tables are prevalent data structure used to implement key-value pair store and lookup. A robust, high performance, concurrent hash table is an area of interest as many algorithms that would otherwise greatly benefit from parallelism are bottlenecked by hash table access. This is seen in the case of transposition tables in chess engines [1] and operation caches in the generation of binary decision diagrams [2].
+
 #### Cuckoo Hashing
+
+
 
 #### Lock-Freedom
 
@@ -24,4 +28,4 @@ We implemented a fully-concurrent cuckoo hash table. On the Latedays cluster con
 
 ### Future Work
 
-### Acknowledgements
+### Sources
