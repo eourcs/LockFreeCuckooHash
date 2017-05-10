@@ -18,7 +18,7 @@ Hash tables are prevalent data structure used to implement key-value pair store 
 
 #### Cuckoo Hashing
 
-
+Cuckoo hashing is a hashing scheme that uses two different hash functions to encode keys, providing two possible hash locations for each key. Lookup involves simply inspecting the two possible hash locations, so it is worst-case O(1) (rather than expected).
 
 #### Lock-Freedom
 
@@ -37,3 +37,5 @@ Hash tables are prevalent data structure used to implement key-value pair store 
 ### Future Work
 
 ### Sources
+[1] http://www.craftychess.com/hyatt/hashing.html
+[2] http://www.tvandijk.nl/wp-content/uploads/2015/01/sylvan_tacas15.pdf
