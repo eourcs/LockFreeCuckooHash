@@ -24,6 +24,14 @@ Hash tables are prevalent data structure used to implement key-value pair store 
 
 ### Our Approach
 
+#### Data Structure
+
+#### Search
+
+#### Relocate
+
+#### Hazard Pointers
+
 ### Results
 
 ### Future Work
