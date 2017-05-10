@@ -66,9 +66,16 @@ The "swap" operation is implemented as a series of `__sync_bool_compare_and_swap
 
 #### Hazard Pointers
 
+
+
+
 ### Results
 
 ### Future Work
+
+### Acknowledgments
+
+Much of this work is derived from _Nguyen and Tsigas, 2014_.
 
 ### Sources
 [1] http://www.craftychess.com/hyatt/hashing.html
