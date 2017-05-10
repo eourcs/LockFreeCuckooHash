@@ -18,7 +18,7 @@ Hash tables are prevalent data structure used to implement key-value pair store 
 
 #### Cuckoo Hashing
 
-Cuckoo hashing is a hashing scheme that uses two different hash functions to encode keys, providing two possible hash locations for each key. Lookup involves simply inspecting the two possible hash locations, so it is worst-case _O(1)_ (rather than expected). Insertions, if both hash locations are taken, involve a chain of relocations in which keys are pushed to their alternate hash locations to make space for the new key. With careful considerations to space utilization and hash functions, this procedure runs in expected _O(1)_ time.
+Cuckoo hashing is a hashing scheme that uses two different hash functions to encode keys, providing two possible hash locations for each key. Lookup involves simply inspecting the two possible hash locations, so it is worst-case _O(1)_ (rather than expected). Insertions, if both hash locations are taken, involve a chain of relocations in which keys are pushed to their alternate hash locations to make space for the new key. With careful considerations to space utilization and hash functions, this procedure runs in expected _O(1)_ time. The relocation procedure is particularly difficult to make lock-free as any alterations to the "cuckoo path" should be observed and carefully considered to determine if a retry of the operation is required.
 
 #### Lock-Freedom
 
@@ -38,4 +38,5 @@ Cuckoo hashing is a hashing scheme that uses two different hash functions to enc
 
 ### Sources
 [1] http://www.craftychess.com/hyatt/hashing.html
+
 [2] http://www.tvandijk.nl/wp-content/uploads/2015/01/sylvan_tacas15.pdf
