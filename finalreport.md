@@ -22,7 +22,7 @@ Cuckoo hashing is a hashing scheme that uses two different hash functions to enc
 
 #### Lock-Freedom
 
-
+Lock-free data structures often perform better under scenarios of high contention and when the machine architecture is unknown (and cannot be heavily optimized for). Since we are benchmarking against a general hash table implementation, lock freedom is an ideal approach for our hash table. Lock-free data structures, despite their performance characteristics, are notoriously difficult to implement as they necessitate a complex set of dependencies and invariants. In particular, the relocation operation, the ABA problem, and memory reclamation make guaranteeing correctness difficult.
 
 ### Approach
 
