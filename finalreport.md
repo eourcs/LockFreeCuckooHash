@@ -74,6 +74,10 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 
 ### Future Work
 
+#### Dynamic Resizing
+
+Most implementations today implement resizing by locking the whole table and copying all of the data to a new table. In practice, this is relatively efficient since resizing occurs infrequently. However, this makes the worst-case cost of an operation tremendously high. Shun [3] proposes a scheme in which a new table is allocated, but only a constant fraction of the data is copied at a time. With careful choice of constants, the number of active tables can be bounded by 2. This promises to be a much less disruptive resizing policy. We thought of applying this same logic to the rehash operation.
+
 ### Acknowledgments
 
 Much of this work is derived from _Nguyen and Tsigas, 2014_. The `uint32_t -> uint32_t` hash functions were written by Bob Jenkins and Thomas Wang and taken from [here](https://gist.github.com/badboy/6267743).
@@ -81,8 +85,8 @@ Much of this work is derived from _Nguyen and Tsigas, 2014_. The `uint32_t -> ui
 ### Sources
 * [1] ["A lockless transposition table implementation for parallel search"](http://www.craftychess.com/hyatt/hashing.html)
 * [2] [Sylvan, "Multi-core Decision Diagrams"](http://www.tvandijk.nl/wp-content/uploads/2015/01/sylvan_tacas15.pdf)
+* [3] [Shun, "Shared-Memory Parallelism Can Be Simple, Fast, and Scalable"](https://people.eecs.berkeley.edu/~jshun/thesis.pdf)
 * [Li et al., "Algorithmic Improvements for Fast Concurrent Cuckoo Hashing"](https://www.cs.cmu.edu/~xia/resources/Documents/cuckoo-eurosys14.pdf)
-* [Shun, "Shared-Memory Parallelism Can Be Simple, Fast, and Scalable"](https://people.eecs.berkeley.edu/~jshun/thesis.pdf)
 * [Nguyen and Tsigas, "Lock-free Cuckoo Hashing"](http://excess-project.eu/publications/published/CuckooHashing_ICDCS.pdf)
 * [Pagh, "Cuckoo Hashing"](http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=1B77D5F578DD4F628C1E982F717CD98E?doi=10.1.1.25.4189&rep=rep1&type=pdf)
 * [Maier, Sanders, and Dementiev, "Concurrent Hash Tables: Fast and General(?)!"](https://arxiv.org/pdf/1601.04017.pdf)
