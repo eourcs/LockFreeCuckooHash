@@ -32,7 +32,9 @@ Lock-free data structures often perform better under scenarios of high contentio
 
 #### Data Structure
 
-![Data Structure](https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Data%20Structure.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Data%20Structure.png" alt="Data Structure"/>
+</p>
 
 ```
 // Cuckoo hash table data structure
@@ -54,7 +56,9 @@ std::vector<std::array<Hash_entry*, 2>> hazard_pointer_record;
 ```
 The general data structure is fairly similar to that of other cuckoo hash tables. For the sake of simplicity, this only supports `(int, int)` key-value pairs, but parametrized variants are not difficult to implement. We allocate two tables which contain elements of the type `Count_ptr`, which, though typedef'ed, differs from `Hash_entry*`. By the x86-64 convention, the 16 most-significant-bits of an 8-byte pointer are not used in virtual addresses. In its place, we store a counter which keeps track of the number of relocations to address the ABA problem. This allows us to perform atomic memory writes with a single `__sync_bool_compare_and_swap` operation. Similarly, due to memory alignment requirements, the least-significant-bit in an address is always 0. In its place, we mark a bit to see if this entry is actively being relocated.
 
-![Pointer Structure](https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Pointer%20Structure.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Pointer%20Structure.png" alt="Pointer Structure"/>
+</p>
 
 To address memory reclamation, we also define the data structures necessary for the implementation of hazard pointers. They are, in essence, composed of a per-thread list of hash table entries that have been removed but not freed yet and and a per-thread array of potentially hazardous references.
 
