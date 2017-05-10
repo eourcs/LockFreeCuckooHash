@@ -46,15 +46,21 @@ std::vector<int>                        retired_count;
 
 std::vector<std::array<Hash_entry*, 2>> hazard_pointer_record;  
 ```
-The general data structure is fairly similar to that of other cuckoo hash tables. For the sake of simplicity, this only supports (int, int) key-value pairs, but parametrized variants are not difficult to implement. We allocate two tables which contain elements of the type `Count_ptr`, which, though typedef'ed, differs from `Hash_entry*`. By the x86-64 convention, the most significant 16 bits of an 8-byte pointer are not used in virtual addresses. In its place, we store a counter which keeps track of the number of relocations to address the ABA problem. This allows us to perform atomic memory writes with a single `__sync_bool_compare_and_swap` operation. Similarly, due to memory alignment requirements, the lowest significant bit in an address is always 0. In its place, we mark a bit to see if this entry is actively being relocated.
+The general data structure is fairly similar to that of other cuckoo hash tables. For the sake of simplicity, this only supports (int, int) key-value pairs, but parametrized variants are not difficult to implement. We allocate two tables which contain elements of the type `Count_ptr`, which, though typedef'ed, differs from `Hash_entry*`. By the x86-64 convention, the 16 most-significant-bits of an 8-byte pointer are not used in virtual addresses. In its place, we store a counter which keeps track of the number of relocations to address the ABA problem. This allows us to perform atomic memory writes with a single `__sync_bool_compare_and_swap` operation. Similarly, due to memory alignment requirements, the least-significant-bit in an address is always 0. In its place, we mark a bit to see if this entry is actively being relocated.
 
-To address memory reclamation, we also define the data structures necessary for the implementation of hazard pointers. They, in essence, are composed of a per-thread list of hash table entries that have been removed but not freed yet and and a per-thread array of potentially hazardous references.
+To address memory reclamation, we also define the data structures necessary for the implementation of hazard pointers. They are, in essence, composed of a per-thread list of hash table entries that have been removed but not freed yet and and a per-thread array of potentially hazardous references.
 
 #### Search
 
+Though the search procedure in sequential implementations only requires lookup of two hash locations, we must be careful when considering concurrent environments. For example, consider a key `x` stored at `hash2(x)`. It is possible for this key to be relocated to `hash1(x)` after we have queried that location but before we query `hash2(x)`. A naive procedure would fail to find such a "moving key", despite it existing in the table.
 
+To address this, we employ a two-round querying method. The first round queries the two hash locations and records the relocation counters. The second round performs the same operations and compares the relocation counters with that of the previous round. If the procedure cannot the find the key and we know that at most one relocation has occured between rounds, then we are guaranteed that the key does not exist in the table. Otherwise, it is possible that the key was missed when querying, so we retry the search procedure.
+
+The implementations of remove and insert are conceptually similar. For the sake of brevity, we focus only on a special case of the insertion operation: relocate.
 
 #### Relocate
+
+
 
 #### Hazard Pointers
 
