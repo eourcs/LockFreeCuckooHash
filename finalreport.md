@@ -90,16 +90,19 @@ We first benchmarked our implementation against a `C++11 unordered_map` and Inte
 <iframe width="640.3650657518581" height="396.008064516129" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=2120330578&amp;format=interactive"></iframe>
 </p>
 
-
+On this test bench, our implementation achieves 20,000 operations per millisecond, which is about 13x faster than a `C++11 unordered_map` and 1.25x faster than Intel's `concurrent_hash_map`. These are quite promising results, but we realized that randomly generated keys and operations may not be the most optimal test bench. We devised another test bench which, similarly, completes 10,000,000 operations with weighted probabilities, but guarantees that search and delete operations succeed (i.e. the element is in the table). We note that raw throughput performance should not be used as an indicator as the benchmarks themselves have differing performance costs due to overhead.
 
 <p align="center">
 <iframe width="639.9612340690219" height="395.8036876098772" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1309392171&amp;format=interactive"></iframe>
 </p>
 
+As we can see, we maintained similar speedup over a `C++11 unordered_map`, but now the figures for Intel's `concurrent_hash_map` and our implementation are much more similar. We believe that this is because many hash map implementations have different performance characteristics for successful and unsuccessful operations, while this is not the case for a cuckoo hash table. The advantage of lock-free data structures, is under scenarios of high contention. In order to test this, we implemented a test bench which repeatedly reads from the same key.
+
 <p align="center">
 <iframe width="641.5" height="396.66083333333336" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1484638631&amp;format=interactive"></iframe>
 </p>
 
+We observe that our lock-free cuckoo hash table greatly outperforms Intel's `concurrent_hash_map` under this test scenario. This is because Intel's implementation uses reader-writer locks which have much higher overhead than our two-round querying procedure. We also note that our implementation outperforms 
 
 ### Future Work
 
