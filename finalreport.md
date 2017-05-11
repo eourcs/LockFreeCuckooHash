@@ -84,7 +84,7 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 
 ### Results
 
-<iframe width="912.0463404520005" height="564" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1309392171&amp;format=interactive"></iframe>
+<iframe width="912.0463404520005" height="300" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1309392171&amp;format=interactive"></iframe>
 
 ### Future Work
 
