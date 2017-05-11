@@ -92,6 +92,11 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 <iframe width="637.9408233276158" height="394.508064516129" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=2120330578&amp;format=interactive"></iframe>
 </p>
 
+<p align="center">
+<iframe width="641.5" height="396.66083333333336" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1484638631&amp;format=interactive"></iframe>
+</p>
+
+
 ### Future Work
 
 #### Dynamic Resizing
