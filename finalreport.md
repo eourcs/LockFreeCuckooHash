@@ -84,9 +84,13 @@ To address this, we implemented hazard pointers, a safe memory reclamation proce
 
 ### Results
 
+We first benchmarked our implementation against a `C++11 unordered_map` and Intel's `concurrent_hash_table` on a stress test which completes 10,000,000 operations with randomly generated keys. The operations are randomly determined by a weighted probability distribution in which 90% of the operations are searches, 5% are inserts, and 5% are removes. Each table was initialized with a capacity of 10,000,000 elements and warmed-up to a load factor of 40%. This is because cuckoo hashing performance degrades quickly once the load factor exceeds 50%. While this is an interesting problem to address, this is a product of the algorithm, not of the lock-free implementation. All tests were performed on two six-core Xeon E5-2620 processors.
+
 <p align="center">
 <iframe width="640.3650657518581" height="396.008064516129" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=2120330578&amp;format=interactive"></iframe>
 </p>
+
+
 
 <p align="center">
 <iframe width="639.9612340690219" height="395.8036876098772" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1309392171&amp;format=interactive"></iframe>
