@@ -102,7 +102,7 @@ As we can see, we maintained similar speedup over a `C++11 unordered_map`, but n
 <iframe width="641.5" height="396.66083333333336" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/1R00onU3EZGq5UJFM5aVaTk1c6dBQdpN6pHaS7GSN3kY/pubchart?oid=1484638631&amp;format=interactive"></iframe>
 </p>
 
-We observe that our lock-free cuckoo hash table greatly outperforms Intel's `concurrent_hash_map` under this test scenario. This is because Intel's implementation uses reader-writer locks which have much higher overhead than our two-round querying procedure. We also note that our implementation outperforms a `C++11 unordered_map`, though we believe this is because our implementation is much simpler.
+We observe that our lock-free cuckoo hash table greatly outperforms Intel's `concurrent_hash_map` under this test scenario. This is because Intel's implementation uses reader-writer locks which have much higher overhead than our two-round querying procedure. We also note that our implementation outperforms a `C++11 unordered_map`, though we believe this is because our implementation is much simpler, rather than any inherent design advantage.
 
 ### Future Work
 
