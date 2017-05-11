@@ -33,7 +33,7 @@ Lock-free data structures often perform better under scenarios of high contentio
 #### Data Structure
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/eourcs/LockFreeCuckooHash/master/images/Data%20Structure.png" alt="Data Structure"/>
+  <img src="https://cdn.rawgit.com/eourcs/LockFreeCuckooHash/master/images/Data%20Structure.svg" alt="Data Structure"/>
 </p>
 
 ```
