@@ -127,27 +127,9 @@ void* thread_service_high_contention(void* threadArgs)
   int num_elems = args->num_elems;
   T* ht_p = static_cast<T*>(args->ht_p);
 
-  int start = 0;
-  int end = 0;
   for (int i = 0; i < num_elems; i++)
   {
-    // Action : 0 -> Search, 1 -> Insert, 2 -> Remove
-    int a = drng(g);
-
-    if (start == end || a == 1) 
-    {
-      ht_p->insert(end, end, tid);
-      end++;
-    }
-    else if (a == 0)
-    {
-      ht_p->search(end, tid);
-    }
-    else
-    {
-      ht_p->remove(start, tid);
-      start++;
-    }
+    ht_p->search(0, tid);
   }
 }
 

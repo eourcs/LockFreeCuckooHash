@@ -129,24 +129,13 @@ void BenchmarkUnorderedMap::benchmark_all()
     std::cout << "\t" << "Avg Throughput (Low): " << static_cast<double>(m_op_count) / avg_time  / 1000.0 << " ops/ms" << std::endl;
 
     results.clear();
-    s = 0;
-    e = 0;
     for (int iter = 0; iter < NUM_ITERS; iter++)
     {
       double start = CycleTimer::currentSeconds();
+      map[0] = 0;
       for (int i = 0; i < m_op_count; i++)
       {
-        int a = drng(g);
-
-        if (s == e || a == 1) {
-          map[e] = e;
-          e++;
-        } else if (a == 0) {
-          map.find(e);
-        } else {
-          map.erase(s);
-          s++;
-        }
+        int x = map[0];
       }
       double time  = CycleTimer::currentSeconds() - start;
       results.push_back(time);

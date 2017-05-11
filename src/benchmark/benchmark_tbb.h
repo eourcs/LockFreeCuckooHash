@@ -280,6 +280,7 @@ void BenchmarkTBB::benchmark_all()
         args[i].dweight   = m_idweight / 2;
         args[i].ht_p      = (void*)&ht;
         args[i].tid       = i;
+        ht.insert(0, 0, 0);
         pthread_create(&workers[i], NULL, thread_service_high_contention<TBB_hash_table>, (void*)&args[i]);
       }
 
