@@ -95,6 +95,68 @@ void BenchmarkUnorderedMap::benchmark_all()
     double avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
     std::cout << "\t" << "Max Throughput: " << static_cast<double>(m_op_count) / best_time / 1000.0 << " ops/ms" << std::endl;
     std::cout << "\t" << "Avg Throughput: " << static_cast<double>(m_op_count) / avg_time  / 1000.0 << " ops/ms" << std::endl;
+
+    results.clear();
+    int *keys = new int[m_op_count];
+    int s = 0;
+    int e = 0;
+    for (int iter = 0; iter < NUM_ITERS; iter++)
+    {
+      double start = CycleTimer::currentSeconds();
+      for (int i = 0; i < m_op_count; i++)
+      {
+        int k = rng(mt);
+        int v = rng(mt);
+        int a = drng(g);
+
+        if (s == e || a == 1) {
+          map[k] = v;
+          keys[e++] = k;
+        } else if (a == 0) {
+          map.find(keys[k % (e - s) + s]);
+        } else {
+          map.erase(keys[s++]);
+        }
+      }
+      double time  = CycleTimer::currentSeconds() - start;
+      results.push_back(time);
+    }
+
+    // Publish Results
+    best_time = *std::min_element(results.begin(), results.end());
+    avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
+    std::cout << "\t" << "Max Throughput (Low): " << static_cast<double>(m_op_count) / best_time / 1000.0 << " ops/ms" << std::endl;
+    std::cout << "\t" << "Avg Throughput (Low): " << static_cast<double>(m_op_count) / avg_time  / 1000.0 << " ops/ms" << std::endl;
+
+    results.clear();
+    s = 0;
+    e = 0;
+    for (int iter = 0; iter < NUM_ITERS; iter++)
+    {
+      double start = CycleTimer::currentSeconds();
+      for (int i = 0; i < m_op_count; i++)
+      {
+        int a = drng(g);
+
+        if (s == e || a == 1) {
+          map[e] = e;
+          e++;
+        } else if (a == 0) {
+          map.find(e);
+        } else {
+          map.erase(s);
+          s++;
+        }
+      }
+      double time  = CycleTimer::currentSeconds() - start;
+      results.push_back(time);
+    }
+
+    // Publish Results
+    best_time = *std::min_element(results.begin(), results.end());
+    avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
+    std::cout << "\t" << "Max Throughput (High): " << static_cast<double>(m_op_count) / best_time / 1000.0 << " ops/ms" << std::endl;
+    std::cout << "\t" << "Avg Throughput (High): " << static_cast<double>(m_op_count) / avg_time  / 1000.0 << " ops/ms" << std::endl;
 }
 
 void BenchmarkUnorderedMap::run()

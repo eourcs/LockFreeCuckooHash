@@ -225,6 +225,80 @@ void BenchmarkLockFreeHT::benchmark_all()
     double avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
     std::cout << "\t" << "Max Throughput: " << m_op_count / best_time / 1000.0 << " ops/ms" << std::endl;
     std::cout << "\t" << "Avg Throughput: " << m_op_count / avg_time  / 1000.0 << " ops/ms" << std::endl;
+
+    results.clear();
+
+    int* keys = new int[m_op_count];
+
+    for (int iter = 0; iter < NUM_ITERS; iter++)
+    {
+      int num_elems = m_op_count / m_thread_count;
+      pthread_t  workers[MAX_THREADS];
+      WorkerArgs args[MAX_THREADS];
+
+      double start = CycleTimer::currentSeconds();
+      for (int i = 0; i < m_thread_count; i++)
+      {
+        args[i].num_elems = num_elems;
+        args[i].rweight   = m_rweight;
+        args[i].iweight   = m_idweight / 2;
+        args[i].dweight   = m_idweight / 2;
+        args[i].ht_p      = (void*)&ht;
+        args[i].tid       = i;
+        args[i].elems     = keys;
+        args[i].start     = i * num_elems;
+        pthread_create(&workers[i], NULL, thread_service_low_contention<Lockfree_hash_table>, (void*)&args[i]);
+      }
+
+      for (int i = 0; i < m_thread_count; i++)
+      {
+        pthread_join(workers[i], NULL);
+      }
+      double time  = CycleTimer::currentSeconds() - start;
+      results.push_back(time);
+    }
+
+    // Publish Results
+    best_time = *std::min_element(results.begin(), results.end());
+    avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
+    std::cout << "\t" << "Max Throughput (Low): " << m_op_count / best_time / 1000.0 << " ops/ms" << std::endl;
+    std::cout << "\t" << "Avg Throughput (Low): " << m_op_count / avg_time  / 1000.0 << " ops/ms" << std::endl;
+
+    results.clear();
+
+    for (int iter = 0; iter < NUM_ITERS; iter++)
+    {
+      int num_elems = m_op_count / m_thread_count;
+      pthread_t  workers[MAX_THREADS];
+      WorkerArgs args[MAX_THREADS];
+
+      double start = CycleTimer::currentSeconds();
+      for (int i = 0; i < m_thread_count; i++)
+      {
+        args[i].num_elems = num_elems;
+        args[i].rweight   = m_rweight;
+        args[i].iweight   = m_idweight / 2;
+        args[i].dweight   = m_idweight / 2;
+        args[i].ht_p      = (void*)&ht;
+        args[i].tid       = i;
+        pthread_create(&workers[i], NULL, thread_service_high_contention<Lockfree_hash_table>, (void*)&args[i]);
+      }
+
+      for (int i = 0; i < m_thread_count; i++)
+      {
+        pthread_join(workers[i], NULL);
+      }
+      double time  = CycleTimer::currentSeconds() - start;
+      results.push_back(time);
+    }
+
+    // Publish Results
+    best_time = *std::min_element(results.begin(), results.end());
+    avg_time  = std::accumulate(results.begin(), results.end(), 0.0) / static_cast<double>(results.size());
+    std::cout << "\t" << "Max Throughput (High): " << m_op_count / best_time / 1000.0 << " ops/ms" << std::endl;
+    std::cout << "\t" << "Avg Throughput (High): " << m_op_count / avg_time  / 1000.0 << " ops/ms" << std::endl;
+
+
 }
 
 void BenchmarkLockFreeHT::run()
