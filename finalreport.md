@@ -8,7 +8,7 @@ filename: finalreport
 
 ### Summary
 
-We implemented a fully-concurrent lock-free cuckoo hash table. On the Latedays cluster consisting of two six-core Xeon E5-2620 processors, our 24-thread implementation achieved ~13x speedup over a `C++11 std::unordered_map` with little degradation in performance over various workloads.
+We implemented a fully-concurrent lock-free cuckoo hash table. On the Latedays cluster consisting of two six-core Xeon E5-2620 processors, our 24-thread implementation achieved ~13x speedup over a `C++11 std::unordered_map` and outperformed the Intel `concurrent_hash_map` with little degradation in performance over various workloads.
 
 ### Background
 
