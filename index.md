@@ -1,6 +1,7 @@
 ---
 title: index
 layout: defaults
+filename: Home
 ---
 
 ## Final Report
