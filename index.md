@@ -116,6 +116,8 @@ Most implementations today implement resizing by locking the whole table and cop
 
 Much of this work is derived from _Nguyen and Tsigas, 2014_. The `uint32_t -> uint32_t` hash functions were written by Bob Jenkins and Thomas Wang and taken from [here](https://gist.github.com/badboy/6267743). Documentation for Intel's `concurrent_hash_map` can be found [here](https://software.intel.com/en-us/node/506191).
 
+Equal work was performed by both project members.
+
 ### Sources
 * [1] ["A lockless transposition table implementation for parallel search"](http://www.craftychess.com/hyatt/hashing.html)
 * [2] [Sylvan, "Multi-core Decision Diagrams"](http://www.tvandijk.nl/wp-content/uploads/2015/01/sylvan_tacas15.pdf)
