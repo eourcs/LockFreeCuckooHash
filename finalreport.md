@@ -10,6 +10,8 @@ filename: finalreport
 
 We implemented a fully-concurrent lock-free cuckoo hash table. On the Latedays cluster consisting of two six-core Xeon E5-2620 processors, our 24-thread implementation achieved ~13x speedup over a `C++11 std::unordered_map` and is competitive with Intel's `concurrent_hash_map` with little degradation in performance over various workloads.
 
+Presentation slides summarizing our approach and findings can be found [here](https://cdn.rawgit.com/eourcs/LockFreeCuckooHash/471c5224/images/cuckoo-hash-slides.pdf).
+
 ### Background
 
 #### Hash Tables
